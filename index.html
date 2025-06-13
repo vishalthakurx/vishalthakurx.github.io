@@ -351,7 +351,7 @@
                         </a>
                     </li>
                     <li style="margin: 0 15px;">
-                        <a href="adminpanel.html" style="text-decoration: none; color: #fff; font-weight: bold; font-size: 1rem; padding: 10px 15px; border-radius: 5px; transition: background 0.3s ease;">
+                        <a href="#admin-panel" style="text-decoration: none; color: #fff; font-weight: bold; font-size: 1rem; padding: 10px 15px; border-radius: 5px; transition: background 0.3s ease;">
                             Admin Panel
                         </a>
                     </li>
@@ -608,50 +608,48 @@
         </div>
     </footer>
     <script>
-        // --- Admin Panel Logic ---
-        const adminPanel = document.getElementById('admin-panel');
-        const adminLoginForm = document.getElementById('admin-login-form');
-        const adminDashboard = document.getElementById('admin-dashboard');
-        const adminTabs = document.querySelectorAll('.admin-tab');
-        const adminSections = document.querySelectorAll('.admin-section');
-        const enableEditBtn = document.getElementById('enable-edit-btn');
-        const saveContentBtn = document.getElementById('save-content-btn');
-        const disableEditBtn = document.getElementById('disable-edit-btn');
-        const editableSections = [
-            'about', 'resume', 'resume-download', 'skills', 'interests', 'projects', 'testimonials', 'store', 'contact', 'social-media'
-        ];
-        // --- User Management ---
-        let users = JSON.parse(localStorage.getItem('users') || '[{"username":"admin","password":"admin"}]');
-        function renderUsers() {
-            const userList = document.getElementById('user-list');
-            userList.innerHTML = users.map((u, i) =>
-                `<div>${u.username} <button onclick="removeUser(${i})">Remove</button></div>`
-            ).join('');
-        }
-        window.removeUser = function(idx) {
-            users.splice(idx, 1);
-            localStorage.setItem('users', JSON.stringify(users));
-            renderUsers();
-        }
-        document.getElementById('add-user-form').onsubmit = function(e) {
-            e.preventDefault();
-            users.push({username: newUsername.value, password: newPassword.value});
-            localStorage.setItem('users', JSON.stringify(users));
-            renderUsers();
-            this.reset();
-        }
-        // --- E-Commerce Management ---
-        let services = JSON.parse(localStorage.getItem('services') || '[]');
-        function renderServices() {
-            const ecomList = document.getElementById('ecom-list');
+    // --- Admin Panel Functionality ---
+
+    // Content Editor
+    const editableSections = [
+        'about', 'resume', 'resume-download', 'skills', 'interests', 'projects', 'testimonials', 'store', 'contact', 'social-media'
+    ];
+    function setEditable(enabled) {
+        editableSections.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.setAttribute('contenteditable', enabled ? 'true' : 'false');
+        });
+    }
+    function saveContent() {
+        editableSections.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) localStorage.setItem('content_' + id, el.innerHTML);
+        });
+        alert('Content saved!');
+    }
+    function loadContent() {
+        editableSections.forEach(id => {
+            const el = document.getElementById(id);
+            const saved = localStorage.getItem('content_' + id);
+            if (el && saved) el.innerHTML = saved;
+        });
+    }
+
+    // E-Commerce Management
+    let services = JSON.parse(localStorage.getItem('services') || '[]');
+    function renderServices() {
+        const ecomList = document.getElementById('ecom-list');
+        if (ecomList) {
             ecomList.innerHTML = services.map((s, i) =>
                 `<div>
                     <b>${s.title}</b> - ₹${s.price}
                     <button onclick="removeService(${i})">Remove</button>
                 </div>`
             ).join('');
-            // Update store section
-            const storeDiv = document.getElementById('services-container');
+        }
+        // Update store section
+        const storeDiv = document.getElementById('services-container');
+        if (storeDiv) {
             if (services.length) {
                 storeDiv.innerHTML = `<h2>Services</h2>` + services.map(s =>
                     `<div class="service">
@@ -660,31 +658,65 @@
                         <button class="buy-now" data-service="${s.title}" data-upi="${s.upi}">Buy Now</button>
                     </div>`
                 ).join('');
+            } else {
+                storeDiv.innerHTML = `<h2>Services</h2><p>No services available.</p>`;
             }
         }
-        window.removeService = function(idx) {
-            services.splice(idx, 1);
-            localStorage.setItem('services', JSON.stringify(services));
-            renderServices();
-        }
-        document.getElementById('add-service-form').onsubmit = function(e) {
+    }
+    window.removeService = function(idx) {
+        services.splice(idx, 1);
+        localStorage.setItem('services', JSON.stringify(services));
+        renderServices();
+    }
+    const addServiceForm = document.getElementById('add-service-form');
+    if (addServiceForm) {
+        addServiceForm.onsubmit = function(e) {
             e.preventDefault();
             services.push({
-                title: serviceTitle.value,
-                price: servicePrice.value,
-                upi: serviceUpi.value
+                title: this['service-title'].value,
+                price: this['service-price'].value,
+                upi: this['service-upi'].value
             });
             localStorage.setItem('services', JSON.stringify(services));
             renderServices();
             this.reset();
         }
-        // --- Settings Management ---
-        document.getElementById('settings-form').onsubmit = function(e) {
+    }
+
+    // User Management
+    let users = JSON.parse(localStorage.getItem('users') || '[{"username":"admin","password":"admin"}]');
+    function renderUsers() {
+        const userList = document.getElementById('user-list');
+        if (userList) {
+            userList.innerHTML = users.map((u, i) =>
+                `<div>${u.username} <button onclick="removeUser(${i})">Remove</button></div>`
+            ).join('');
+        }
+    }
+    window.removeUser = function(idx) {
+        users.splice(idx, 1);
+        localStorage.setItem('users', JSON.stringify(users));
+        renderUsers();
+    }
+    const addUserForm = document.getElementById('add-user-form');
+    if (addUserForm) {
+        addUserForm.onsubmit = function(e) {
             e.preventDefault();
-            document.title = siteTitle.value;
-            localStorage.setItem('siteTitle', siteTitle.value);
-            // Theme logic (demo)
-            if (themeSelect.value === 'dark') {
+            users.push({username: this['new-username'].value, password: this['new-password'].value});
+            localStorage.setItem('users', JSON.stringify(users));
+            renderUsers();
+            this.reset();
+        }
+    }
+
+    // Settings
+    const settingsForm = document.getElementById('settings-form');
+    if (settingsForm) {
+        settingsForm.onsubmit = function(e) {
+            e.preventDefault();
+            document.title = this['site-title'].value;
+            localStorage.setItem('siteTitle', this['site-title'].value);
+            if (this['theme-select'].value === 'dark') {
                 document.body.style.background = '#222';
                 document.body.style.color = '#eee';
             } else {
@@ -692,40 +724,16 @@
                 document.body.style.color = '';
             }
         }
-        // --- Content Editor ---
-        enableEditBtn.onclick = function() {
-            editableSections.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.setAttribute('contenteditable', 'true');
-            });
-        }
-        saveContentBtn.onclick = function() {
-            editableSections.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) localStorage.setItem('content_' + id, el.innerHTML);
-            });
-            alert('Content saved!');
-        }
-        disableEditBtn.onclick = function() {
-            editableSections.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.setAttribute('contenteditable', 'false');
-            });
-        }
-        // --- Tab Switching ---
-        adminTabs.forEach(tab => {
-            tab.onclick = function() {
-                adminTabs.forEach(t => t.classList.remove('active'));
-                adminSections.forEach(s => s.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById('admin-' + tab.dataset.tab).classList.add('active');
-            }
-        });
-        // --- Admin Login ---
+    }
+
+    // Admin Login
+    const adminLoginForm = document.getElementById('admin-login-form');
+    const adminDashboard = document.getElementById('admin-dashboard');
+    if (adminLoginForm && adminDashboard) {
         adminLoginForm.onsubmit = function(e) {
             e.preventDefault();
-            const u = adminLoginForm['admin-username'].value;
-            const p = adminLoginForm['admin-password'].value;
+            const u = this['admin-username'].value;
+            const p = this['admin-password'].value;
             if (users.find(user => user.username === u && user.password === p)) {
                 adminLoginForm.classList.add('fadeOut');
                 setTimeout(() => {
@@ -738,31 +746,57 @@
                 alert('Invalid credentials');
             }
         }
-        // --- Load saved content/settings on page load ---
-        window.addEventListener('DOMContentLoaded', () => {
-            editableSections.forEach(id => {
-                const el = document.getElementById(id);
-                const saved = localStorage.getItem('content_' + id);
-                if (el && saved) el.innerHTML = saved;
-            });
-            const savedTitle = localStorage.getItem('siteTitle');
-            if (savedTitle) document.title = savedTitle;
-            renderUsers();
-            renderServices();
-        });
-        // --- E-commerce Buy Now handler (demo) ---
-        document.body.addEventListener('click', function(e) {
-            if (e.target.classList.contains('buy-now')) {
-                const upi = e.target.getAttribute('data-upi');
-                window.open(upi, '_blank');
-            }
-        });
-        // --- UPI Payment Demo ---
-        async function initiateUPIPayment() {
-            const upiId = document.getElementById('upiId').value;
-            const amount = 500;
-            alert('Pretend to pay ' + amount + ' to ' + upiId);
+    }
+
+    // Tab Switching
+    const adminTabs = document.querySelectorAll('.admin-tab');
+    const adminSections = document.querySelectorAll('.admin-section');
+    adminTabs.forEach(tab => {
+        tab.onclick = function() {
+            adminTabs.forEach(t => t.classList.remove('active'));
+            adminSections.forEach(s => s.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('admin-' + tab.dataset.tab).classList.add('active');
         }
+    });
+
+    // Content Editor Buttons
+    const enableEditBtn = document.getElementById('enable-edit-btn');
+    const saveContentBtn = document.getElementById('save-content-btn');
+    const disableEditBtn = document.getElementById('disable-edit-btn');
+    if (enableEditBtn) enableEditBtn.onclick = () => setEditable(true);
+    if (saveContentBtn) saveContentBtn.onclick = saveContent;
+    if (disableEditBtn) disableEditBtn.onclick = () => setEditable(false);
+
+    // Load saved content/settings on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        loadContent();
+        const savedTitle = localStorage.getItem('siteTitle');
+        if (savedTitle) document.title = savedTitle;
+        renderUsers();
+        renderServices();
+        showAdminPanelIfHash();
+    });
+
+    // E-commerce Buy Now handler
+    document.body.addEventListener('click', function(e) {
+        if (e.target.classList.contains('buy-now')) {
+            const upi = e.target.getAttribute('data-upi');
+            window.open(upi, '_blank');
+        }
+    });
+
+    // Show admin panel when navigating to #admin-panel
+    function showAdminPanelIfHash() {
+        const adminPanel = document.getElementById('admin-panel');
+        if (window.location.hash === '#admin-panel' && adminPanel) {
+            adminPanel.classList.remove('hidden');
+            window.scrollTo({ top: adminPanel.offsetTop - 60, behavior: 'smooth' });
+        } else if (adminPanel) {
+            adminPanel.classList.add('hidden');
+        }
+    }
+    window.addEventListener('hashchange', showAdminPanelIfHash);
     </script>
     <script src="scripts/services.js"></script>
 </body>
