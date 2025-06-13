@@ -2,262 +2,423 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
+    <title>Admin Panel - Vishal Thakur</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <style>
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);
+            color: #222;
             margin: 0;
-            background: linear-gradient(120deg, #e0eafc, #cfdef3 100%);
             min-height: 100vh;
         }
-        .login-container {
+        .topbar {
+            background: #2c3e50;
+            color: #fff;
+            padding: 18px 0 16px 0;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px rgba(44,62,80,0.08);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-        .login-card {
-            background: #fff;
-            padding: 2em 2.5em;
-            border-radius: 12px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-            min-width: 320px;
+        .topbar .logo {
+            font-size: 1.7rem;
+            margin-right: 12px;
+            color: #2ecc71;
         }
-        .login-card h2 {
-            margin-bottom: 1.2em;
-            color: #333;
-            text-align: center;
-        }
-        .login-card input {
-            width: 100%;
-            padding: 0.7em;
-            margin-bottom: 1em;
-            border: 1px solid #bfc9d1;
-            border-radius: 6px;
-            font-size: 1em;
-            background: #f7fafd;
-        }
-        .login-card button {
-            width: 100%;
-            padding: 0.7em;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+        .logout-btn {
+            margin-left: auto;
+            margin-right: 24px;
+            background: #e74c3c;
             color: #fff;
             border: none;
-            border-radius: 6px;
-            font-size: 1em;
+            padding: 8px 18px;
+            border-radius: 5px;
+            font-weight: 500;
             cursor: pointer;
             transition: background 0.2s;
         }
-        .login-card button:hover {
-            background: linear-gradient(90deg, #5a67d8, #6b47b6);
+        .logout-btn:hover {
+            background: #c0392b;
         }
-        .login-error {
-            color: #e53e3e;
-            text-align: center;
-            margin-bottom: 1em;
-            font-size: 0.97em;
-        }
-        .sidebar {
-            width: 220px;
-            background: linear-gradient(180deg, #667eea 60%, #764ba2 100%);
-            color: #fff;
-            height: 100vh;
-            float: left;
-            box-shadow: 2px 0 12px rgba(0,0,0,0.07);
-        }
-        .sidebar h2 {
-            text-align: center;
-            padding: 1.5em 0 1em 0;
-            font-size: 1.5em;
-            letter-spacing: 1px;
-            margin: 0;
-        }
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-        .sidebar ul li {
-            padding: 1.1em 2em;
-            cursor: pointer;
-            transition: background 0.2s;
-            border-left: 4px solid transparent;
-        }
-        .sidebar ul li:hover, .sidebar ul li.active {
-            background: rgba(255,255,255,0.08);
-            border-left: 4px solid #fff;
-        }
-        .main {
-            margin-left: 220px;
-            padding: 2.5em 3em;
-            min-height: 100vh;
-        }
-        .card {
+        .container {
+            max-width: 540px;
+            margin: 40px auto;
             background: #fff;
-            padding: 2em 2em 1.5em 2em;
-            margin-bottom: 2em;
-            border-radius: 10px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(44,62,80,0.10);
+            padding: 36px 32px 32px 32px;
         }
-        .card h3 {
+        h2 {
+            color: #2c3e50;
             margin-top: 0;
-            color: #667eea;
+            font-size: 2rem;
+            letter-spacing: 1px;
+            text-align: center;
         }
-        .user-list {
-            margin-top: 1.5em;
+        form {
+            margin-bottom: 0;
         }
-        .user-list li {
-            margin-bottom: 0.7em;
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #34495e;
+        }
+        input[type="text"], input[type="password"], input[type="email"], select {
+            width: 100%;
+            padding: 11px 12px;
+            margin-bottom: 16px;
+            border: 1px solid #dbeafe;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #f8fafc;
+            transition: border 0.2s;
+        }
+        input:focus, select:focus {
+            border: 1.5px solid #3498db;
+            outline: none;
+            background: #eaf6fb;
+        }
+        button, .admin-tab {
+            background: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(52,152,219,0.07);
+        }
+        button:last-child, .admin-tab:last-child {
+            margin-right: 0;
+        }
+        button:hover, .admin-tab:hover {
+            background: #217dbb;
+        }
+        .admin-tab.active {
+            background: #2ecc71;
+            color: #fff;
+        }
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            justify-content: center;
+        }
+        .admin-section {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+        .admin-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px);}
+            to { opacity: 1; transform: none;}
+        }
+        .fadeOut { animation: fadeOut 0.7s forwards; }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
+        .ecom-list, .user-list {
+            margin-bottom: 16px;
+        }
+        .ecom-list div, .user-list div {
+            background: #f8fafc;
+            border-radius: 5px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #f7fafd;
-            padding: 0.5em 1em;
-            border-radius: 5px;
         }
-        input, button {
-            font-size: 1em;
-        }
-        #userForm input {
-            width: 60%;
-            margin-right: 1em;
-        }
-        #userForm button {
-            width: 35%;
-            background: #667eea;
-            border-radius: 5px;
-            border: none;
-            color: #fff;
-            transition: background 0.2s;
-        }
-        #userForm button:hover {
-            background: #5a67d8;
-        }
-        .user-list button {
-            background: #e53e3e;
-            color: #fff;
-            border: none;
+        .ecom-list button, .user-list button {
+            background: #e74c3c;
+            padding: 5px 14px;
             border-radius: 4px;
-            padding: 0.3em 0.8em;
-            cursor: pointer;
-            transition: background 0.2s;
+            font-size: 0.95em;
+            margin: 0;
         }
-        .user-list button:hover {
-            background: #c53030;
+        .ecom-list button:hover, .user-list button:hover {
+            background: #c0392b;
+        }
+        .admin-section h3 {
+            margin-top: 0;
+            color: #217dbb;
+        }
+        .info-note {
+            font-size: 0.97em;
+            color: #888;
+            margin-top: 8px;
         }
         @media (max-width: 700px) {
-            .sidebar { display: none; }
-            .main { margin-left: 0; padding: 1em; }
+            .container { padding: 18px 6vw 18px 6vw; }
+            .topbar { font-size: 1.1rem; }
         }
     </style>
 </head>
 <body>
-    <div id="loginSection" class="login-container">
-        <form class="login-card" id="loginForm" autocomplete="off">
-            <h2>Admin Login</h2>
-            <div id="loginError" class="login-error" style="display:none;"></div>
-            <input type="text" id="adminUsername" placeholder="Username" required autofocus>
-            <input type="password" id="adminPassword" placeholder="Password" required>
+    <div class="topbar">
+        <span class="logo">🛠️</span> Vishal Thakur Admin Panel
+        <button class="logout-btn hidden" id="logout-btn">Logout</button>
+    </div>
+    <div class="container">
+        <h2>Admin Panel</h2>
+        <form id="admin-login-form">
+            <label for="admin-username">Username:</label>
+            <input type="text" id="admin-username" name="admin-username" required autocomplete="username">
+            <label for="admin-password">Password:</label>
+            <input type="password" id="admin-password" name="admin-password" required autocomplete="current-password">
             <button type="submit">Login</button>
         </form>
-    </div>
-    <div id="dashboardSection" style="display:none;">
-        <div class="sidebar">
-            <h2>Dashboard</h2>
-            <ul>
-                <li id="overviewTab" class="active" onclick="showSection('overview')">Overview</li>
-                <li id="usersTab" onclick="showSection('users')">Users</li>
-            </ul>
-        </div>
-        <div class="main">
-            <div id="overview" class="card">
-                <h3>Overview</h3>
-                <p>Total Users: <span id="totalUsers">0</span></p>
+        <div id="admin-dashboard" class="hidden">
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="content">Content Editor</button>
+                <button class="admin-tab" data-tab="ecom">E-Commerce</button>
+                <button class="admin-tab" data-tab="users">User Management</button>
+                <button class="admin-tab" data-tab="settings">Settings</button>
             </div>
-            <div id="users" class="card" style="display:none;">
-                <h3>Manage Users</h3>
-                <form id="userForm">
-                    <input type="text" id="username" placeholder="Enter username" required>
+            <div id="admin-content" class="admin-section active">
+                <p>Edit the main website by clicking <b>Enable Edit</b>, then <b>Save All</b> to persist changes.</p>
+                <button id="enable-edit-btn">Enable Edit</button>
+                <button id="save-content-btn">Save All</button>
+                <button id="disable-edit-btn">Disable Edit</button>
+                <div class="info-note">(Edits apply to the main site. Reload the main site to see changes.)</div>
+            </div>
+            <div id="admin-ecom" class="admin-section">
+                <h3>Manage Services</h3>
+                <div id="ecom-list" class="ecom-list"></div>
+                <form id="add-service-form">
+                    <input type="text" id="service-title" placeholder="Service Title" required>
+                    <input type="text" id="service-price" placeholder="Price" required>
+                    <input type="text" id="service-upi" placeholder="UPI Link" required>
+                    <button type="submit">Add Service</button>
+                </form>
+            </div>
+            <div id="admin-users" class="admin-section">
+                <h3>User Management</h3>
+                <div id="user-list" class="user-list"></div>
+                <form id="add-user-form">
+                    <input type="text" id="new-username" placeholder="Username" required>
+                    <input type="password" id="new-password" placeholder="Password" required>
                     <button type="submit">Add User</button>
                 </form>
-                <ul class="user-list" id="userList"></ul>
+            </div>
+            <div id="admin-settings" class="admin-section">
+                <h3>Settings</h3>
+                <form id="settings-form">
+                    <label for="site-title">Site Title:</label>
+                    <input type="text" id="site-title" value="Vishal Thakur">
+                    <label for="theme-select">Theme:</label>
+                    <select id="theme-select">
+                        <option value="default">Default</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                    <button type="submit">Save Settings</button>
+                </form>
             </div>
         </div>
     </div>
     <script>
-        // Admin login logic
-        const loginForm = document.getElementById('loginForm');
-        const loginSection = document.getElementById('loginSection');
-        const dashboardSection = document.getElementById('dashboardSection');
-        const loginError = document.getElementById('loginError');
+    // --- Admin Panel Standalone Functionality ---
 
-        loginForm.onsubmit = function(e) {
+    // Content Editor for main site
+    function setEditable(enabled) {
+        let mainContent = document.getElementById('editable-main-content');
+        if (!mainContent) {
+            mainContent = document.createElement('div');
+            mainContent.id = 'editable-main-content';
+            mainContent.style.marginTop = '24px';
+            mainContent.style.background = '#f8fafc';
+            mainContent.style.border = '1.5px solid #dbeafe';
+            mainContent.style.borderRadius = '8px';
+            mainContent.style.padding = '18px 16px';
+            mainContent.style.minHeight = '200px';
+            mainContent.style.maxHeight = '60vh';
+            mainContent.style.overflowY = 'auto';
+            mainContent.style.fontSize = '1.05em';
+            mainContent.innerHTML = localStorage.getItem('content_main') || '';
+            document.querySelector('.container').appendChild(mainContent);
+        }
+        if (enabled) {
+            mainContent.setAttribute('contenteditable', 'true');
+            mainContent.focus();
+        } else {
+            mainContent.removeAttribute('contenteditable');
+        }
+    }
+    function saveContent() {
+        let mainContent = document.getElementById('editable-main-content');
+        if (mainContent) {
+            localStorage.setItem('content_main', mainContent.innerHTML);
+            alert('Content saved! Reload the main site to see changes.');
+            mainContent.remove();
+        }
+    }
+    function disableEdit() {
+        let mainContent = document.getElementById('editable-main-content');
+        if (mainContent) mainContent.removeAttribute('contenteditable');
+    }
+
+    // E-Commerce Management
+    let services = JSON.parse(localStorage.getItem('services') || '[]');
+    function renderServices() {
+        const ecomList = document.getElementById('ecom-list');
+        if (ecomList) {
+            ecomList.innerHTML = services.map((s, i) =>
+                `<div>
+                    <span><b>${s.title}</b> - ₹${s.price}</span>
+                    <button onclick="removeService(${i})">Remove</button>
+                </div>`
+            ).join('');
+        }
+    }
+    window.removeService = function(idx) {
+        services.splice(idx, 1);
+        localStorage.setItem('services', JSON.stringify(services));
+        renderServices();
+    }
+    const addServiceForm = document.getElementById('add-service-form');
+    if (addServiceForm) {
+        addServiceForm.onsubmit = function(e) {
             e.preventDefault();
-            const username = document.getElementById('adminUsername').value.trim();
-            const password = document.getElementById('adminPassword').value;
-            if (username === 'cobra' && password === '1234') {
-                loginSection.style.display = 'none';
-                dashboardSection.style.display = 'block';
-                updateDashboard();
-            } else {
-                loginError.textContent = 'Invalid username or password.';
-                loginError.style.display = 'block';
-            }
-        };
-
-        // Sidebar tab highlight
-        function showSection(section) {
-            document.getElementById('overview').style.display = section === 'overview' ? 'block' : 'none';
-            document.getElementById('users').style.display = section === 'users' ? 'block' : 'none';
-            document.getElementById('overviewTab').classList.toggle('active', section === 'overview');
-            document.getElementById('usersTab').classList.toggle('active', section === 'users');
-        }
-
-        // User management
-        function getUsers() {
-            return JSON.parse(localStorage.getItem('users') || '[]');
-        }
-
-        function setUsers(users) {
-            localStorage.setItem('users', JSON.stringify(users));
-            updateDashboard();
-        }
-
-        function updateDashboard() {
-            const users = getUsers();
-            document.getElementById('totalUsers').textContent = users.length;
-            const userList = document.getElementById('userList');
-            userList.innerHTML = '';
-            users.forEach((user, idx) => {
-                const li = document.createElement('li');
-                li.textContent = user;
-                const delBtn = document.createElement('button');
-                delBtn.textContent = 'Delete';
-                delBtn.onclick = () => {
-                    users.splice(idx, 1);
-                    setUsers(users);
-                };
-                li.appendChild(delBtn);
-                userList.appendChild(li);
+            services.push({
+                title: this['service-title'].value,
+                price: this['service-price'].value,
+                upi: this['service-upi'].value
             });
+            localStorage.setItem('services', JSON.stringify(services));
+            renderServices();
+            this.reset();
         }
+    }
 
-        document.getElementById('userForm').onsubmit = function(e) {
+    // User Management
+    let users = JSON.parse(localStorage.getItem('users') || '[{"username":"cobra","password":"1234"}]');
+    function renderUsers() {
+        const userList = document.getElementById('user-list');
+        if (userList) {
+            userList.innerHTML = users.map((u, i) =>
+                `<div><span>${u.username}</span> <button onclick="removeUser(${i})">Remove</button></div>`
+            ).join('');
+        }
+    }
+    window.removeUser = function(idx) {
+        users.splice(idx, 1);
+        localStorage.setItem('users', JSON.stringify(users));
+        renderUsers();
+    }
+    const addUserForm = document.getElementById('add-user-form');
+    if (addUserForm) {
+        addUserForm.onsubmit = function(e) {
             e.preventDefault();
-            const username = document.getElementById('username').value.trim();
-            if (username) {
-                const users = getUsers();
-                users.push(username);
-                setUsers(users);
-                document.getElementById('username').value = '';
+            users.push({username: this['new-username'].value, password: this['new-password'].value});
+            localStorage.setItem('users', JSON.stringify(users));
+            renderUsers();
+            this.reset();
+        }
+    }
+
+    // Settings
+    const settingsForm = document.getElementById('settings-form');
+    if (settingsForm) {
+        settingsForm.onsubmit = function(e) {
+            e.preventDefault();
+            document.title = this['site-title'].value;
+            localStorage.setItem('siteTitle', this['site-title'].value);
+            if (this['theme-select'].value === 'dark') {
+                document.body.style.background = '#222';
+                document.body.style.color = '#eee';
+            } else {
+                document.body.style.background = '';
+                document.body.style.color = '';
             }
-        };
+        }
+    }
 
-        // Prevent dashboard from showing if not logged in
-        dashboardSection.style.display = 'none';
+    // Admin Login
+    const adminLoginForm = document.getElementById('admin-login-form');
+    const adminDashboard = document.getElementById('admin-dashboard');
+    const logoutBtn = document.getElementById('logout-btn');
+    function doAdminLogin() {
+        if (adminLoginForm && adminDashboard) {
+            adminLoginForm.classList.add('fadeOut');
+            setTimeout(() => {
+                adminLoginForm.classList.add('hidden');
+                adminDashboard.classList.remove('hidden');
+                logoutBtn.classList.remove('hidden');
+                renderUsers();
+                renderServices();
+            }, 700);
+        }
+    }
+    if (adminLoginForm && adminDashboard) {
+        adminLoginForm.onsubmit = function(e) {
+            e.preventDefault();
+            const u = this['admin-username'].value;
+            const p = this['admin-password'].value;
+            if (users.find(user => user.username === u && user.password === p)) {
+                localStorage.setItem('adminLoggedIn', 'true');
+                doAdminLogin();
+            } else {
+                alert('Invalid credentials');
+            }
+        }
+    }
+    // Remember login
+    function checkAdminLogin() {
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            doAdminLogin();
+        }
+    }
+    // Logout
+    if (logoutBtn) {
+        logoutBtn.onclick = function() {
+            localStorage.removeItem('adminLoggedIn');
+            location.reload();
+        }
+    }
 
-        // Optionally, focus username input on load
-        document.getElementById('adminUsername').focus();
+    // Tab Switching
+    const adminTabs = document.querySelectorAll('.admin-tab');
+    const adminSections = document.querySelectorAll('.admin-section');
+    adminTabs.forEach(tab => {
+        tab.onclick = function() {
+            adminTabs.forEach(t => t.classList.remove('active'));
+            adminSections.forEach(s => s.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('admin-' + tab.dataset.tab).classList.add('active');
+        }
+    });
+
+    // Content Editor Buttons
+    const enableEditBtn = document.getElementById('enable-edit-btn');
+    const saveContentBtn = document.getElementById('save-content-btn');
+    const disableEditBtn = document.getElementById('disable-edit-btn');
+    if (enableEditBtn) enableEditBtn.onclick = () => setEditable(true);
+    if (saveContentBtn) saveContentBtn.onclick = saveContent;
+    if (disableEditBtn) disableEditBtn.onclick = disableEdit;
+
+    // Load saved content/settings on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedTitle = localStorage.getItem('siteTitle');
+        if (savedTitle) document.title = savedTitle;
+        renderUsers();
+        renderServices();
+        checkAdminLogin();
+    });
     </script>
 </body>
 </html>
