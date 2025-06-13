@@ -6,6 +6,7 @@
     <title>Vishal Thakur</title>
     <meta name="description" content="Improved website with enhanced UI and information">
     <meta name="keywords" content="UI, Information, Vishal Thakur, Portfolio">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="store.js" defer></script>
     <script src="script.js" defer></script>
@@ -20,8 +21,7 @@
                     <li class="active"><a href="#header">Home</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#resume">Resume</a></li>
-                    <li><a href="#skills">Technical Skills</a></li>
-                    <li><a href="#interests">Interests</a></li>
+                    <li><a href="#skills">Skills</a></li>
                     <li><a href="#projects">Projects</a></li>
                     <li><a href="#contact">Contact</a></li>
                     <li><a href="#store">Services</a></li>
@@ -46,15 +46,21 @@
         </section>
         <section id="skills" class="skills fadeInBounce">
             <div class="container">
-                <h2>Technical Skills</h2>
-                <ul>
-                    <li>Java</li>
-                    <li>JavaScript</li>
-                    <li>Python</li>
-                    <li>SQL</li>
-                    <li>Angular</li>
-                    <li>Node.js</li>
-                </ul>
+                <h2>Skills</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3>Java</h3>
+                        <p>Expert in building scalable backend systems.</p>
+                    </div>
+                    <div class="card">
+                        <h3>JavaScript</h3>
+                        <p>Proficient in creating dynamic web applications.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Python</h3>
+                        <p>Experienced in data analysis and automation.</p>
+                    </div>
+                </div>
             </div>
         </section>
         <section id="interests" class="interests fadeInBounce">
@@ -71,15 +77,17 @@
         <section id="projects" class="projects fadeInBounce">
             <div class="container">
                 <h2>Projects</h2>
-                <div class="project">
-                    <h3>Project 1</h3>
-                    <p>A brief description of Project 1.</p>
-                    <img src="graphics/project1.svg" alt="Project 1 Graphic" class="graphic">
-                </div>
-                <div class="project">
-                    <h3>Project 2</h3>
-                    <p>A brief description of Project 2.</p>
-                    <img src="graphics/project2.svg" alt="Project 2 Graphic" class="graphic">
+                <div class="grid">
+                    <div class="card">
+                        <h3>Project 1</h3>
+                        <p>A brief description of Project 1.</p>
+                        <img src="graphics/project1.svg" alt="Project 1 Graphic" class="graphic">
+                    </div>
+                    <div class="card">
+                        <h3>Project 2</h3>
+                        <p>A brief description of Project 2.</p>
+                        <img src="graphics/project2.svg" alt="Project 2 Graphic" class="graphic">
+                    </div>
                 </div>
             </div>
         </section>
