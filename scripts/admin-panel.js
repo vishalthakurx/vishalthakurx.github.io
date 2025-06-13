@@ -11,60 +11,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalUsers = document.getElementById('dashboard-total-users');
     const totalProducts = document.getElementById('dashboard-total-products');
     const totalSessions = document.getElementById('dashboard-active-sessions');
-    const analyticsChartCanvas = document.getElementById('analytics-chart');
-    const refreshAnalyticsBtn = document.getElementById('refresh-analytics');
-    const resetAnalyticsBtn = document.getElementById('reset-analytics');
-    const settingsForm = document.getElementById('settings-form');
-    const themeSelect = document.getElementById('theme-select');
-    const notificationsToggle = document.getElementById('notifications-toggle');
 
-    // Demo credentials
-    const ADMIN_USER = "admin";
-    const ADMIN_PASS = "password123";
-    const SUPER_ADMIN_USER = "cobra";
-    const SUPER_ADMIN_PASS = "1234";
-    let isSuperAdmin = false;
-
-    // Demo data (localStorage for persistence)
-    function getUsers() {
-        return JSON.parse(localStorage.getItem('admin-users') || '["Alice","Bob"]');
+    // Utility functions for localStorage
+    function getData(key, fallback = []) {
+        try {
+            return JSON.parse(localStorage.getItem(key)) || fallback;
+        } catch {
+            return fallback;
+        }
     }
-    function setUsers(users) {
-        localStorage.setItem('admin-users', JSON.stringify(users));
-    }
-    function getProducts() {
-        return JSON.parse(localStorage.getItem('admin-products') || '["Product A","Product B"]');
-    }
-    function setProducts(products) {
-        localStorage.setItem('admin-products', JSON.stringify(products));
-    }
-    function getAnalytics() {
-        return JSON.parse(localStorage.getItem('admin-analytics') ||
-            JSON.stringify({
-                labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                users: [5, 7, 8, 6, 10, 12, 9],
-                products: [2, 3, 1, 4, 2, 5, 3],
-                sessions: [3, 4, 5, 2, 6, 7, 5]
-            })
-        );
-    }
-    function setAnalytics(data) {
-        localStorage.setItem('admin-analytics', JSON.stringify(data));
-    }
-    function getSettings() {
-        return JSON.parse(localStorage.getItem('admin-settings') ||
-            JSON.stringify({ theme: "light", notifications: true })
-        );
-    }
-    function setSettings(settings) {
-        localStorage.setItem('admin-settings', JSON.stringify(settings));
+    function setData(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
     }
 
-    // Helper for roles
-    function getRoles() {
-        return JSON.parse(localStorage.getItem('admin-roles') || '{"Alice":"user","Bob":"user"}');
+    // --- User Management ---
+    function renderUsers() {
+        const users = getData('admin_users');
+        userList.innerHTML = '';
+        users.forEach((user, idx) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span><b>${user.username}</b> (${user.role})</span>
+                <span>
+                    <button onclick="editUser(${idx})"><i class="fa fa-edit"></i></button>
+                    <button onclick="deleteUser(${idx})"><i class="fa fa-trash"></i></button>
+                </span>
+            `;
+            userList.appendChild(li);
+        });
+        updateDashboard();
     }
-    function setRoles(roles) {
+    window.editUser = function(idx) {
+        showModal('Edit User', [
+            { label: 'Username', id: 'username', type: 'text', value: getData('admin_users')[idx].username, required: true },
+            { label: 'Role', id: 'role', type: 'text', value: getData('admin_users')[idx].role, required: true }
+        ], (fields) => {
+            const users = getData('admin_users');
+            users[idx].username = fields.username;
+            users[idx].role = fields.role;
+            setData('admin_users', users);
+            renderUsers();
+        });
+    };
+    window.deleteUser = function(idx) {
+        if (confirm('Delete this user?')) {
+            const users = getData('admin_users');
+            users.splice(idx, 1);
+            setData('admin_users', users);
+            renderUsers();
+        }
+    };
+    addUserBtn.onclick = function() {
+        showModal('Add User', [
+            { label: 'Username', id: 'username', type: 'text', required: true },
+            { label: 'Role', id: 'role', type: 'text', required: true }
         localStorage.setItem('admin-roles', JSON.stringify(roles));
     }
 

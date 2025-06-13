@@ -149,6 +149,45 @@
     <script src="scripts/admin-panel.js"></script>
     <script src="scripts/admin-modal.js"></script>
     <script src="viewLogger.js"></script>
+    <!-- Admin login logic -->
+    <script>
+        // Admin login credentials
+        const ADMIN_USERNAME = 'cobra';
+        const ADMIN_PASSWORD = '1234';
+
+        const loginSection = document.getElementById('admin-login-section');
+        const dashboardSection = document.getElementById('admin-dashboard');
+        const loginForm = document.getElementById('admin-login-form');
+        const passwordInput = document.getElementById('admin-password');
+        const togglePasswordBtn = document.getElementById('toggle-password');
+        const togglePasswordIcon = document.getElementById('toggle-password-icon');
+
+        // Toggle password visibility
+        togglePasswordBtn.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                togglePasswordIcon.classList.remove('fa-eye');
+                togglePasswordIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                togglePasswordIcon.classList.remove('fa-eye-slash');
+                togglePasswordIcon.classList.add('fa-eye');
+            }
+        });
+
+        // Handle login form submit
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('admin-username').value.trim();
+            const password = passwordInput.value;
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                loginSection.classList.add('hidden');
+                dashboardSection.classList.remove('hidden');
+            } else {
+                alert('Invalid username or password.');
+            }
+        });
+    </script>
     <script>
         function renderLogs() {
             const logs = window.viewLogger.getViewLogs();
