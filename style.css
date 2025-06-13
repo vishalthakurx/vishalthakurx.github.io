@@ -16,6 +16,16 @@ body.dark-mode {
     --button-hover-color: #666;
 }
 
+body.light {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body.dark {
+    background-color: #000000;
+    color: #ffffff;
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     line-height: 1.6;
@@ -259,7 +269,7 @@ form button:hover {
     background-color: var(--secondary-color);
 }
 
-.graphic {
+graphic {
     display: block;
     margin: 20px auto;
     max-width: 100%;

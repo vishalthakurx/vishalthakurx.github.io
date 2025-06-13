@@ -41,3 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.display = 'none';
     });
 });
+
+function saveThemePreference(theme) {
+    localStorage.setItem('theme', theme);
+}
+
+function getThemePreference() {
+    return localStorage.getItem('theme') || 'light'; // Default to 'light' theme
+}

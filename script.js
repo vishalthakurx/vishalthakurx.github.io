@@ -5,6 +5,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('dark-mode');
     }
 
+    const themeToggleButton = document.getElementById('theme-toggle');
+    const currentTheme = getThemePreference();
+    document.body.classList.add(currentTheme);
+
+    themeToggleButton.addEventListener('click', () => {
+        const newTheme = document.body.classList.contains('light') ? 'dark' : 'light';
+        document.body.classList.remove('light', 'dark');
+        document.body.classList.add(newTheme);
+        saveThemePreference(newTheme);
+    });
+
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
