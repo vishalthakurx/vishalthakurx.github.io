@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('http://localhost:3000/api/users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: username })
+            body: JSON.stringify({ username }) // Fixed property name
         }).then(() => alert('User added successfully'));
     }
 
