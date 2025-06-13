@@ -1,279 +1,791 @@
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // --- User Management ---
-    const addUserBtn = document.getElementById('add-user-btn');
-    const userList = document.getElementById('user-list');
-    if (addUserBtn && userList) {
-        let users = JSON.parse(localStorage.getItem('admin_users') || '[]');
-
-        addUserBtn.addEventListener('click', function() {
-            openUserModal();
-        });
-
-        function openUserModal(user = null, idx = null) {
-            modalTitle.textContent = user ? 'Edit User' : 'Add User';
-            modalForm.innerHTML = `
-                <div class="form-group">
-                    <label for="user-username">Username</label>
-                    <input type="text" id="user-username" required pattern="^[a-zA-Z0-9_]{4,16}$" value="${user ? user.username : ''}">
-                </div>
-                <div class="form-group">
-                    <label for="user-role">Role</label>
-                    <select id="user-role">
-                        <option value="admin"${user && user.role === 'admin' ? ' selected' : ''}>Admin</option>
-                        <option value="editor"${user && user.role === 'editor' ? ' selected' : ''}>Editor</option>
-                        <option value="viewer"${user && user.role === 'viewer' ? ' selected' : ''}>Viewer</option>
-                    </select>
-                </div>
-            `;
-            modalOverlay.classList.remove('hidden');
-            modalSaveBtn.onclick = function(e) {
-                e.preventDefault();
-                const username = document.getElementById('user-username').value.trim();
-                const role = document.getElementById('user-role').value;
-                if (!username) {
-                    showToast('Please enter a username.');
-                    return;
-                }
-                if (user) {
-                    users[idx] = { username, role };
-                } else {
-                    users.push({ username, role });
-                }
-                localStorage.setItem('admin_users', JSON.stringify(users));
-                renderUserList();
-                closeModal();
-                showToast(user ? 'User updated.' : 'User added.');
-            };
-        }
-
-        function renderUserList() {
-            userList.innerHTML = '';
-            users.forEach((user, idx) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    ${user.username} <span style="color:#888;">(${user.role})</span>
-                    <button class="btn-secondary" style="margin-left:8px;" onclick="editUser(${idx})"><i class="fa fa-edit"></i></button>
-                    <button class="btn-danger" style="margin-left:4px;" onclick="deleteUser(${idx})"><i class="fa fa-trash"></i></button>
-                `;
-                userList.appendChild(li);
-            });
-            const totalUsers = document.getElementById('dashboard-total-users');
-            if (totalUsers) totalUsers.textContent = users.length;
-        }
-        window.editUser = function(idx) {
-            openUserModal(users[idx], idx);
-        };
-        window.deleteUser = function(idx) {
-            if (confirm('Delete this user?')) {
-                users.splice(idx, 1);
-                localStorage.setItem('admin_users', JSON.stringify(users));
-                renderUserList();
-                showToast('User deleted.');
-            }
-        };
-        renderUserList();
-    }
-
-    // --- Product Edit/Delete ---
-    const productList = document.getElementById('product-list');
-    if (productList) {
-        let products = JSON.parse(localStorage.getItem('admin_products') || '[]');
-
-        function renderProductList() {
-            productList.innerHTML = '';
-            products.forEach((product, idx) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    ${product.name} - ₹${product.price}
-                    <button class="btn-secondary" style="margin-left:8px;" onclick="editProduct(${idx})"><i class="fa fa-edit"></i></button>
-                    <button class="btn-danger" style="margin-left:4px;" onclick="deleteProduct(${idx})"><i class="fa fa-trash"></i></button>
-                `;
-                productList.appendChild(li);
-            });
-            const totalProducts = document.getElementById('dashboard-total-products');
-            if (totalProducts) totalProducts.textContent = products.length;
-            localStorage.setItem('admin_products', JSON.stringify(products));
-        }
-        window.editProduct = function(idx) {
-            openProductModal(products[idx], idx);
-        };
-        window.deleteProduct = function(idx) {
-            if (confirm('Delete this product?')) {
-                products.splice(idx, 1);
-                renderProductList();
-                showToast('Product deleted.');
-            }
-        };
-        renderProductList();
-
-        function openProductModal(product = null, idx = null) {
-            modalTitle.textContent = product ? 'Edit Product' : 'Add Product';
-            modalForm.innerHTML = `
-                <div class="form-group">
-                    <label for="product-name">Name</label>
-                    <input type="text" id="product-name" required value="${product ? product.name : ''}">
-                </div>
-                <div class="form-group">
-                    <label for="product-price">Price</label>
-                    <input type="number" id="product-price" required min="0" value="${product ? product.price : ''}">
-                </div>
-            `;
-            modalOverlay.classList.remove('hidden');
-            modalSaveBtn.onclick = function(e) {
-                e.preventDefault();
-                const name = document.getElementById('product-name').value.trim();
-                const price = parseFloat(document.getElementById('product-price').value);
-                if (!name || isNaN(price)) {
-                    showToast('Please enter valid product details.');
-                    return;
-                }
-                if (product && idx !== null) {
-                    products[idx] = { name, price };
-                } else {
-                    products.push({ name, price });
-                }
-                renderProductList();
-                closeModal();
-                showToast(product ? 'Product updated.' : 'Product added.');
-            };
-        }
-    }
-
-    // --- Service Management ---
-    const addServiceBtn = document.getElementById('add-service-btn');
-    const serviceList = document.getElementById('service-list');
-    if (addServiceBtn && serviceList) {
-        let services = JSON.parse(localStorage.getItem('admin_services') || '[]');
-
-        addServiceBtn.addEventListener('click', function() {
-            openServiceModal();
-        });
-
-        function openServiceModal(service = null, idx = null) {
-            modalTitle.textContent = service ? 'Edit Service' : 'Add Service';
-            modalForm.innerHTML = `
-                <div class="form-group">
-                    <label for="service-name">Name</label>
-                    <input type="text" id="service-name" required value="${service ? service.name : ''}">
-                </div>
-                <div class="form-group">
-                    <label for="service-desc">Description</label>
-                    <input type="text" id="service-desc" required value="${service ? service.desc : ''}">
-                </div>
-            `;
-            modalOverlay.classList.remove('hidden');
-            modalSaveBtn.onclick = function(e) {
-                e.preventDefault();
-                const name = document.getElementById('service-name').value.trim();
-                const desc = document.getElementById('service-desc').value.trim();
-                if (!name || !desc) {
-                    showToast('Please enter valid service details.');
-                    return;
-                }
-                if (service && idx !== null) {
-                    services[idx] = { name, desc };
-                } else {
-                    services.push({ name, desc });
-                }
-                localStorage.setItem('admin_services', JSON.stringify(services));
-                renderServiceList();
-                closeModal();
-                showToast(service ? 'Service updated.' : 'Service added.');
-            };
-        }
-
-        function renderServiceList() {
-            serviceList.innerHTML = '';
-            services.forEach((service, idx) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    ${service.name} - <span style="color:#888;">${service.desc}</span>
-                    <button class="btn-secondary" style="margin-left:8px;" onclick="editService(${idx})"><i class="fa fa-edit"></i></button>
-                    <button class="btn-danger" style="margin-left:4px;" onclick="deleteService(${idx})"><i class="fa fa-trash"></i></button>
-                `;
-                serviceList.appendChild(li);
-            });
-        }
-        window.editService = function(idx) {
-            openServiceModal(services[idx], idx);
-        };
-        window.deleteService = function(idx) {
-            if (confirm('Delete this service?')) {
-                services.splice(idx, 1);
-                localStorage.setItem('admin_services', JSON.stringify(services));
-                renderServiceList();
-                showToast('Service deleted.');
-            }
-        };
-        renderServiceList();
-    }
-});
-</script>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - E-Commerce CMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8fafc; }
+        .nav-tabs .nav-link.active { background: #fff; border-bottom: 2px solid #0d6efd; }
+        .tab-pane { padding-top: 2rem; }
+        .modal-backdrop.show { opacity: 0.2; }
+        .table-actions button { margin-right: 0.5rem; }
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2000; }
+    </style>
+</head>
 <body>
-    <!-- Dashboard Summary -->
-    <div id="dashboard">
-        <h2>Dashboard</h2>
-        <div>
-            <span>Total Users: <span id="dashboard-total-users">0</span></span> |
-            <span>Total Products: <span id="dashboard-total-products">0</span></span>
+<div class="container py-4">
+    <h1 class="mb-4"><i class="fa fa-cogs"></i> Admin Panel</h1>
+    <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">Dashboard</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">Users</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab">Products</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services" type="button" role="tab">Services</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">Orders</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories" type="button" role="tab">Categories</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="todos-tab" data-bs-toggle="tab" data-bs-target="#todos" type="button" role="tab">To-Do</button>
+        </li>
+    </ul>
+    <div class="tab-content bg-white rounded shadow-sm p-4" id="adminTabsContent">
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <i class="fa fa-users fa-2x text-primary"></i>
+                            <h5 class="card-title mt-2">Users</h5>
+                            <span id="dashboard-total-users" class="fs-4">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <i class="fa fa-box fa-2x text-success"></i>
+                            <h5 class="card-title mt-2">Products</h5>
+                            <span id="dashboard-total-products" class="fs-4">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <i class="fa fa-concierge-bell fa-2x text-warning"></i>
+                            <h5 class="card-title mt-2">Services</h5>
+                            <span id="dashboard-total-services" class="fs-4">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <i class="fa fa-shopping-cart fa-2x text-danger"></i>
+                            <h5 class="card-title mt-2">Orders</h5>
+                            <span id="dashboard-total-orders" class="fs-4">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <i class="fa fa-tags fa-2x text-info"></i>
+                            <h5 class="card-title mt-2">Categories</h5>
+                            <span id="dashboard-total-categories" class="fs-4">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <!-- User Management -->
-    <section>
-        <h3>Users</h3>
-        <button id="add-user-btn" class="btn-primary">Add User</button>
-        <ul id="user-list"></ul>
-    </section>
-
-    <!-- Product Management -->
-    <section>
-        <h3>Products</h3>
-        <ul id="product-list"></ul>
-    </section>
-
-    <!-- Service Management -->
-    <section>
-        <h3>Services</h3>
-        <button id="add-service-btn" class="btn-primary">Add Service</button>
-        <ul id="service-list"></ul>
-    </section>
-
-    <!-- Modal Overlay -->
-    <div id="modal-overlay" class="hidden" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;z-index:1000;">
-        <div style="background:#fff;padding:24px;border-radius:8px;min-width:300px;position:relative;">
-            <h4 id="modal-title"></h4>
-            <form id="modal-form"></form>
-            <div style="margin-top:16px;">
-                <button id="modal-save-btn" class="btn-primary">Save</button>
-                <button type="button" id="modal-cancel-btn" class="btn-secondary">Cancel</button>
+        <!-- Users -->
+        <div class="tab-pane fade" id="users" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Users</h4>
+                <button id="add-user-btn" class="btn btn-primary"><i class="fa fa-plus"></i> Add User</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th style="width:120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-list"></tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Products -->
+        <div class="tab-pane fade" id="products" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Products</h4>
+                <button id="add-product-btn" class="btn btn-primary"><i class="fa fa-plus"></i> Add Product</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th style="width:120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-list"></tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Services -->
+        <div class="tab-pane fade" id="services" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Services</h4>
+                <button id="add-service-btn" class="btn btn-primary"><i class="fa fa-plus"></i> Add Service</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th style="width:120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="service-list"></tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Orders -->
+        <div class="tab-pane fade" id="orders" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Orders</h4>
+                <button id="add-order-btn" class="btn btn-primary"><i class="fa fa-plus"></i> Add Order</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>User</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                            <th style="width:120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-list"></tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Categories -->
+        <div class="tab-pane fade" id="categories" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>Categories</h4>
+                <button id="add-category-btn" class="btn btn-primary"><i class="fa fa-plus"></i> Add Category</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th style="width:120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="category-list"></tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Toast Notification -->
-    <div id="toast" style="position:fixed;bottom:24px;right:24px;background:#333;color:#fff;padding:12px 24px;border-radius:4px;display:none;z-index:2000;"></div>
+<!-- Modal -->
+<div class="modal fade" id="adminModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" id="modal-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer">
+                <button type="submit" id="modal-save-btn" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Toast -->
+<div class="toast-container">
+    <div id="toast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
 
-    <script>
-    // Modal and Toast helpers
-    const modalOverlay = document.getElementById('modal-overlay');
-    const modalTitle = document.getElementById('modal-title');
-    const modalForm = document.getElementById('modal-form');
-    const modalSaveBtn = document.getElementById('modal-save-btn');
-    const modalCancelBtn = document.getElementById('modal-cancel-btn');
-    const toast = document.getElementById('toast');
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// --- Data helpers ---
+function getData(key, fallback=[]) {
+    return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+}
+function setData(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+}
 
-    function closeModal() {
-        modalOverlay.classList.add('hidden');
+// --- Toast helper ---
+function showToast(msg, type='primary') {
+    const toastEl = document.getElementById('toast');
+    toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+    toastEl.querySelector('.toast-body').textContent = msg;
+    const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
+    toast.show();
+}
+
+// --- Modal helpers ---
+const adminModal = new bootstrap.Modal(document.getElementById('adminModal'));
+const modalTitle = document.getElementById('modal-title');
+const modalBody = document.getElementById('modal-body');
+const modalForm = document.getElementById('modal-form');
+let modalSaveHandler = null;
+modalForm.onsubmit = function(e) {
+    e.preventDefault();
+    if (modalSaveHandler) modalSaveHandler();
+};
+
+// --- Dashboard update ---
+function updateDashboard() {
+    document.getElementById('dashboard-total-users').textContent = getData('admin_users').length;
+    document.getElementById('dashboard-total-products').textContent = getData('admin_products').length;
+    document.getElementById('dashboard-total-services').textContent = getData('admin_services').length;
+    document.getElementById('dashboard-total-orders').textContent = getData('admin_orders').length;
+    document.getElementById('dashboard-total-categories').textContent = getData('admin_categories').length;
+}
+
+// --- Users ---
+function renderUserList() {
+    const users = getData('admin_users');
+    const tbody = document.getElementById('user-list');
+    tbody.innerHTML = '';
+    users.forEach((user, idx) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${user.username}</td>
+                <td>${user.email || ''}</td>
+                <td>${user.role}</td>
+                <td class="table-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="editUser(${idx})"><i class="fa fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteUser(${idx})"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+    updateDashboard();
+}
+window.editUser = function(idx) {
+    const users = getData('admin_users');
+    const user = users[idx];
+    modalTitle.textContent = 'Edit User';
+    modalBody.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" id="user-username" class="form-control" required value="${user.username}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" id="user-email" class="form-control" required value="${user.email || ''}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select id="user-role" class="form-select">
+                <option value="admin"${user.role === 'admin' ? ' selected' : ''}>Admin</option>
+                <option value="editor"${user.role === 'editor' ? ' selected' : ''}>Editor</option>
+                <option value="viewer"${user.role === 'viewer' ? ' selected' : ''}>Viewer</option>
+            </select>
+        </div>
+    `;
+    modalSaveHandler = function() {
+        user.username = document.getElementById('user-username').value.trim();
+        user.email = document.getElementById('user-email').value.trim();
+        user.role = document.getElementById('user-role').value;
+        users[idx] = user;
+        setData('admin_users', users);
+        renderUserList();
+        adminModal.hide();
+        showToast('User updated', 'success');
+    };
+    adminModal.show();
+};
+window.deleteUser = function(idx) {
+    if (confirm('Delete this user?')) {
+        const users = getData('admin_users');
+        users.splice(idx, 1);
+        setData('admin_users', users);
+        renderUserList();
+        showToast('User deleted', 'danger');
     }
-    modalCancelBtn.onclick = closeModal;
+};
+document.getElementById('add-user-btn').onclick = function() {
+    modalTitle.textContent = 'Add User';
+    modalBody.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" id="user-username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" id="user-email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select id="user-role" class="form-select">
+                <option value="admin">Admin</option>
+                <option value="editor">Editor</option>
+                <option value="viewer">Viewer</option>
+            </select>
+        </div>
+    `;
+    modalSaveHandler = function() {
+        const users = getData('admin_users');
+        users.push({
+            username: document.getElementById('user-username').value.trim(),
+            email: document.getElementById('user-email').value.trim(),
+            role: document.getElementById('user-role').value
+        });
+        setData('admin_users', users);
+        renderUserList();
+        adminModal.hide();
+        showToast('User added', 'success');
+    };
+    adminModal.show();
+};
 
-    function showToast(msg) {
-        toast.textContent = msg;
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+// --- Products ---
+function renderProductList() {
+    const products = getData('admin_products');
+    const categories = getData('admin_categories');
+    const tbody = document.getElementById('product-list');
+    tbody.innerHTML = '';
+    products.forEach((product, idx) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${product.image ? `<img src="${product.image}" alt="img" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">` : ''}</td>
+                <td>${product.name}</td>
+                <td>${product.desc || ''}</td>
+                <td>${categories.find(c => c.id === product.category)?.name || ''}</td>
+                <td>₹${product.price}</td>
+                <td class="table-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="editProduct(${idx})"><i class="fa fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteProduct(${idx})"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+    updateDashboard();
+}
+window.editProduct = function(idx) {
+    const products = getData('admin_products');
+    const categories = getData('admin_categories');
+    const product = products[idx];
+    modalTitle.textContent = 'Edit Product';
+    modalBody.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" id="product-name" class="form-control" required value="${product.name}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea id="product-desc" class="form-control" required>${product.desc || ''}</textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <select id="product-category" class="form-select">
+                ${categories.map(c => `<option value="${c.id}"${c.id === product.category ? ' selected' : ''}>${c.name}</option>`).join('')}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Price</label>
+            <input type="number" id="product-price" class="form-control" required min="0" value="${product.price}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Image URL</label>
+            <input type="url" id="product-image" class="form-control" value="${product.image || ''}">
+        </div>
+    `;
+    modalSaveHandler = function() {
+        product.name = document.getElementById('product-name').value.trim();
+        product.desc = document.getElementById('product-desc').value.trim();
+        product.category = document.getElementById('product-category').value;
+        product.price = parseFloat(document.getElementById('product-price').value);
+        product.image = document.getElementById('product-image').value.trim();
+        products[idx] = product;
+        setData('admin_products', products);
+        renderProductList();
+        adminModal.hide();
+        showToast('Product updated', 'success');
+    };
+    adminModal.show();
+};
+window.deleteProduct = function(idx) {
+    if (confirm('Delete this product?')) {
+        const products = getData('admin_products');
+        products.splice(idx, 1);
+        setData('admin_products', products);
+        renderProductList();
+        showToast('Product deleted', 'danger');
     }
-    </script>
+};
+document.getElementById('add-product-btn').onclick = function() {
+    const categories = getData('admin_categories');
+    modalTitle.textContent = 'Add Product';
+    modalBody.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" id="product-name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea id="product-desc" class="form-control" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <select id="product-category" class="form-select">
+                ${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Price</label>
+            <input type="number" id="product-price" class="form-control" required min="0">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Image URL</label>
+            <input type="url" id="product-image" class="form-control">
+        </div>
+    `;
+    modalSaveHandler = function() {
+        const products = getData('admin_products');
+        products.push({
+            name: document.getElementById('product-name').value.trim(),
+            desc: document.getElementById('product-desc').value.trim(),
+            category: document.getElementById('product-category').value,
+            price: parseFloat(document.getElementById('product-price').value),
+            image: document.getElementById('product-image').value.trim()
+        });
+        setData('admin_products', products);
+        renderProductList();
+        adminModal.hide();
+        showToast('Product added', 'success');
+    };
+    adminModal.show();
+};
+
+// --- Services ---
+function renderServiceList() {
+    const services = getData('admin_services');
+    const tbody = document.getElementById('service-list');
+    tbody.innerHTML = '';
+    services.forEach((service, idx) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${service.name}</td>
+                <td>${service.desc || ''}</td>
+                <td>₹${service.price || ''}</td>
+                <td class="table-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="editService(${idx})"><i class="fa fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteService(${idx})"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+    updateDashboard();
+}
+window.editService = function(idx) {
+    const services = getData('admin_services');
+    const service = services[idx];
+    modalTitle.textContent = 'Edit Service';
+    modalBody.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" id="service-name" class="form-control" required value="${service.name}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <input type="text" id="service-desc" class="form-control" required value="${service.desc || ''}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Price</label>
+            <input type="number" id="service-price" class="form-control" required min="0" value="${service.price || ''}">
+        </div>
+    `;
+    modalSaveHandler = function() {
+        service.name = document.getElementById('service-name').value.trim();
+        service.desc = document.getElementById('service-desc').value.trim();
+        service.price = parseFloat(document.getElementById('service-price').value);
+        services[idx] = service;
+        setData('admin_services', services);
+        renderServiceList();
+        adminModal.hide();
+        showToast('Service updated', 'success');
+    };
+    adminModal.show();
+};
+window.deleteService = function(idx) {
+    if (confirm('Delete this service?')) {
+        const services = getData('admin_services');
+        services.splice(idx, 1);
+        setData('admin_services', services);
+        renderServiceList();
+        showToast('Service deleted', 'danger');
+    }
+};
+document.getElementById('add-service-btn').onclick = function() {
+    modalTitle.textContent = 'Add Service';
+    modalBody.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" id="service-name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <input type="text" id="service-desc" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Price</label>
+            <input type="number" id="service-price" class="form-control" required min="0">
+        </div>
+    `;
+    modalSaveHandler = function() {
+        const services = getData('admin_services');
+        services.push({
+            name: document.getElementById('service-name').value.trim(),
+            desc: document.getElementById('service-desc').value.trim(),
+            price: parseFloat(document.getElementById('service-price').value)
+        });
+        setData('admin_services', services);
+        renderServiceList();
+        adminModal.hide();
+        showToast('Service added', 'success');
+    };
+    adminModal.show();
+};
+
+// --- Orders ---
+function renderOrderList() {
+    const orders = getData('admin_orders');
+    const users = getData('admin_users');
+    const products = getData('admin_products');
+    const tbody = document.getElementById('order-list');
+    tbody.innerHTML = '';
+    orders.forEach((order, idx) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${order.id}</td>
+                <td>${users.find(u => u.username === order.user)?.username || ''}</td>
+                <td>${products.find(p => p.name === order.product)?.name || ''}</td>
+                <td>${order.quantity}</td>
+                <td>${order.status}</td>
+                <td class="table-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="editOrder(${idx})"><i class="fa fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteOrder(${idx})"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+    updateDashboard();
+}
+window.editOrder = function(idx) {
+    const orders = getData('admin_orders');
+    const users = getData('admin_users');
+    const products = getData('admin_products');
+    const order = orders[idx];
+    modalTitle.textContent = 'Edit Order';
+    modalBody.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">User</label>
+            <select id="order-user" class="form-select">
+                ${users.map(u => `<option value="${u.username}"${u.username === order.user ? ' selected' : ''}>${u.username}</option>`).join('')}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Product</label>
+            <select id="order-product" class="form-select">
+                ${products.map(p => `<option value="${p.name}"${p.name === order.product ? ' selected' : ''}>${p.name}</option>`).join('')}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Quantity</label>
+            <input type="number" id="order-quantity" class="form-control" required min="1" value="${order.quantity}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select id="order-status" class="form-select">
+                <option value="Pending"${order.status === 'Pending' ? ' selected' : ''}>Pending</option>
+                <option value="Shipped"${order.status === 'Shipped' ? ' selected' : ''}>Shipped</option>
+                <option value="Delivered"${order.status === 'Delivered' ? ' selected' : ''}>Delivered</option>
+                <option value="Cancelled"${order.status === 'Cancelled' ? ' selected' : ''}>Cancelled</option>
+            </select>
+        </div>
+    `;
+    modalSaveHandler = function() {
+        order.user = document.getElementById('order-user').value;
+        order.product = document.getElementById('order-product').value;
+        order.quantity = parseInt(document.getElementById('order-quantity').value, 10);
+        order.status = document.getElementById('order-status').value;
+        orders[idx] = order;
+        setData('admin_orders', orders);
+        renderOrderList();
+        adminModal.hide();
+        showToast('Order updated', 'success');
+    };
+    adminModal.show();
+};
+window.deleteOrder = function(idx) {
+    if (confirm('Delete this order?')) {
+        const orders = getData('admin_orders');
+        orders.splice(idx, 1);
+        setData('admin_orders', orders);
+        renderOrderList();
+        showToast('Order deleted', 'danger');
+    }
+};
+document.getElementById('add-order-btn').onclick = function() {
+    const users = getData('admin_users');
+    const products = getData('admin_products');
+    modalTitle.textContent = 'Add Order';
+    modalBody.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">User</label>
+            <select id="order-user" class="form-select">
+                ${users.map(u => `<option value="${u.username}">${u.username}</option>`).join('')}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Product</label>
+            <select id="order-product" class="form-select">
+                ${products.map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Quantity</label>
+            <input type="number" id="order-quantity" class="form-control" required min="1" value="1">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select id="order-status" class="form-select">
+                <option value="Pending">Pending</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+    `;
+    modalSaveHandler = function() {
+        const orders = getData('admin_orders');
+        orders.push({
+            id: 'ORD' + (Date.now()),
+            user: document.getElementById('order-user').value,
+            product: document.getElementById('order-product').value,
+            quantity: parseInt(document.getElementById('order-quantity').value, 10),
+            status: document.getElementById('order-status').value
+        });
+        setData('admin_orders', orders);
+        renderOrderList();
+        adminModal.hide();
+        showToast('Order added', 'success');
+    };
+    adminModal.show();
+};
+
+// --- Categories ---
+function renderCategoryList() {
+    const categories = getData('admin_categories');
+    const tbody = document.getElementById('category-list');
+    tbody.innerHTML = '';
+    categories.forEach((cat, idx) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${cat.name}</td>
+                <td>${cat.desc || ''}</td>
+                <td class="table-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="editCategory(${idx})"><i class="fa fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteCategory(${idx})"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+    updateDashboard();
+}
+window.editCategory = function(idx) {
+    const categories = getData('admin_categories');
+    const cat = categories[idx];
+    modalTitle.textContent = 'Edit Category';
+    modalBody.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" id="category-name" class="form-control" required value="${cat.name}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <input type="text" id="category-desc" class="form-control" value="${cat.desc || ''}">
+        </div>
+    `;
+    modalSaveHandler = function() {
+        cat.name = document.getElementById('category-name').value.trim();
+        cat.desc = document.getElementById('category-desc').value.trim();
+        categories[idx] = cat;
+        setData('admin_categories', categories);
+        renderCategoryList();
+        adminModal.hide();
+        showToast('Category updated', 'success');
+    };
+    adminModal.show();
+};
+window.deleteCategory = function(idx) {
+    if (confirm('Delete this category?')) {
+        const categories = getData('admin_categories');
+        categories.splice(idx, 1);
+        setData('admin_categories', categories);
+        renderCategoryList();
+        showToast('Category deleted', 'danger');
+    }
+};
+document.getElementById('add-category-btn').onclick = function() {
+    modalTitle.textContent = 'Add Category';
+    modalBody.innerHTML = `
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" id="category-name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <input type="text" id="category-desc" class="form-control">
+        </div>
+    `;
+    modalSaveHandler = function() {
+        const categories = getData('admin_categories');
+        categories.push({
+            id: 'CAT' + (Date.now()),
+            name: document.getElementById('category-name').value.trim(),
+            desc: document.getElementById('category-desc').value.trim()
+        });
+        setData('admin_categories', categories);
+        renderCategoryList();
+        adminModal.hide();
+        showToast('Category added', 'success');
+    };
+    adminModal.show();
+};
+
+// --- Initial render ---
+function renderAll() {
+    renderUserList();
+    renderProductList();
+    renderServiceList();
+    renderOrderList();
+    renderCategoryList();
+}
+document.addEventListener('DOMContentLoaded', renderAll);
+</script>
 </body>
+</html>
