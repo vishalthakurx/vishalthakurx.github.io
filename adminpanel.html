@@ -1,16 +1,5 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Admin Token Check ---
-    const ADMIN_TOKEN = 'YOUR_SECRET_TOKEN'; // Set your secret token here
-    function isAdminTokenValid() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('admin') === ADMIN_TOKEN;
-    }
-    if (!isAdminTokenValid()) {
-        document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;"><h2>Access Denied: Invalid Admin Token</h2></div>';
-        return;
-    }
-
     // --- User Management ---
     const addUserBtn = document.getElementById('add-user-btn');
     const userList = document.getElementById('user-list');
