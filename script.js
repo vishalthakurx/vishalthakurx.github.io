@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupUPIPayment();
     setupScrollAnimations();
     setupHireMeButton();
+    setupScrollToTopButton();
+    setupLazyLoading();
 
     const adminLoginForm = document.getElementById("admin-login-form");
     const adminDashboard = document.getElementById("admin-dashboard");
@@ -15,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = document.getElementById("admin-username").value;
         const password = document.getElementById("admin-password").value;
 
-        // Replace with actual authentication logic
         if (username === "admin" && password === "password123") {
             adminLoginForm.classList.add("hidden");
             adminDashboard.classList.remove("hidden");
@@ -30,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = document.getElementById("edit-name").value;
         const description = document.getElementById("edit-description").value;
 
-        // Replace with actual save logic
         alert(`Details updated:\nName: ${name}\nDescription: ${description}`);
     });
 });
@@ -102,4 +102,46 @@ function setupHireMeButton() {
     document.querySelector('.hero button').addEventListener('click', () => {
         document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
     });
+}
+
+function setupScrollToTopButton() {
+    const scrollToTopButton = document.createElement('button');
+    scrollToTopButton.id = 'scroll-to-top';
+    scrollToTopButton.textContent = '↑';
+    scrollToTopButton.style.position = 'fixed';
+    scrollToTopButton.style.bottom = '20px';
+    scrollToTopButton.style.right = '20px';
+    scrollToTopButton.style.background = '#3498db';
+    scrollToTopButton.style.color = '#fff';
+    scrollToTopButton.style.border = 'none';
+    scrollToTopButton.style.padding = '10px';
+    scrollToTopButton.style.borderRadius = '50%';
+    scrollToTopButton.style.cursor = 'pointer';
+    scrollToTopButton.style.display = 'none';
+    scrollToTopButton.style.zIndex = '1000';
+    document.body.appendChild(scrollToTopButton);
+
+    scrollToTopButton.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    window.addEventListener('scroll', () => {
+        scrollToTopButton.style.display = window.scrollY > 300 ? 'block' : 'none';
+    });
+}
+
+function setupLazyLoading() {
+    const lazyImages = document.querySelectorAll('img[data-src]');
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.removeAttribute('data-src');
+                observer.unobserve(img);
+            }
+        });
+    });
+
+    lazyImages.forEach(img => observer.observe(img));
 }

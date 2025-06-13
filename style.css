@@ -413,7 +413,7 @@ button:hover {
     transition: color 0.3s ease;
 }
 
-.social-media ul li a:hover {
+social-media ul li a:hover {
     color: var(--secondary-color);
 }
 
@@ -456,6 +456,60 @@ button:hover {
 
 .admin-panel button:hover {
     background: #2ecc71;
+}
+
+.admin-panel.hidden {
+    display: none;
+}
+
+#admin-login-form, #edit-details-form {
+    margin-top: 20px;
+}
+
+#admin-login-form label, #edit-details-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#admin-login-form input, #edit-details-form input, #edit-details-form textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#admin-login-form button, #edit-details-form button {
+    background: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#admin-login-form button:hover, #edit-details-form button:hover {
+    background: #2ecc71;
+}
+
+#scroll-to-top {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+#scroll-to-top:hover {
+    background: #2ecc71;
+    transform: scale(1.1);
+}
+
+img[data-src] {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+img:not([data-src]) {
+    opacity: 1;
 }
 
 @media (max-width: 768px) {
