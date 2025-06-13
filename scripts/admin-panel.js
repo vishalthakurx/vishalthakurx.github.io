@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Demo credentials
     const ADMIN_USER = "admin";
     const ADMIN_PASS = "password123";
+    const SUPER_ADMIN_USER = "cobra";
+    const SUPER_ADMIN_PASS = "1234";
+    let isSuperAdmin = false;
 
     // Demo data (localStorage for persistence)
     function getUsers() {
@@ -189,7 +192,11 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const username = document.getElementById('admin-username').value;
         const password = document.getElementById('admin-password').value;
-        if (username === ADMIN_USER && password === ADMIN_PASS) {
+        if (
+            (username === ADMIN_USER && password === ADMIN_PASS) ||
+            (username === SUPER_ADMIN_USER && password === SUPER_ADMIN_PASS)
+        ) {
+            isSuperAdmin = (username === SUPER_ADMIN_USER);
             loginSection.classList.add('hidden');
             dashboardSection.classList.remove('hidden');
             renderUsers();
@@ -197,6 +204,20 @@ document.addEventListener('DOMContentLoaded', () => {
             updateDashboard();
             renderAnalytics();
             loadSettings();
+            // Show super admin badge if logged in as super admin
+            if (isSuperAdmin) {
+                let badge = document.getElementById('super-admin-badge');
+                if (!badge) {
+                    badge = document.createElement('div');
+                    badge.id = 'super-admin-badge';
+                    badge.textContent = 'Super Admin';
+                    badge.style = 'background:#ff4b5c;color:#fff;padding:6px 16px;border-radius:20px;display:inline-block;margin:10px 0;font-weight:bold;';
+                    dashboardSection.prepend(badge);
+                }
+            } else {
+                const badge = document.getElementById('super-admin-badge');
+                if (badge) badge.remove();
+            }
         } else {
             alert('Invalid credentials');
         }
