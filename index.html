@@ -621,11 +621,13 @@
         const mainContent = document.getElementById('main-content');
         if (mainContent) localStorage.setItem('content_main', mainContent.innerHTML);
         alert('Content saved!');
+        initAdminPanel(); // re-attach admin panel events after saving
     }
     function loadContent() {
         const mainContent = document.getElementById('main-content');
         const saved = localStorage.getItem('content_main');
         if (mainContent && saved) mainContent.innerHTML = saved;
+        initAdminPanel(); // re-attach admin panel events after loading
     }
 
     // E-Commerce Management
@@ -661,20 +663,6 @@
         localStorage.setItem('services', JSON.stringify(services));
         renderServices();
     }
-    const addServiceForm = document.getElementById('add-service-form');
-    if (addServiceForm) {
-        addServiceForm.onsubmit = function(e) {
-            e.preventDefault();
-            services.push({
-                title: this['service-title'].value,
-                price: this['service-price'].value,
-                upi: this['service-upi'].value
-            });
-            localStorage.setItem('services', JSON.stringify(services));
-            renderServices();
-            this.reset();
-        }
-    }
 
     // User Management
     let users = JSON.parse(localStorage.getItem('users') || '[{"username":"cobra","password":"1234"}]');
@@ -691,38 +679,93 @@
         localStorage.setItem('users', JSON.stringify(users));
         renderUsers();
     }
-    const addUserForm = document.getElementById('add-user-form');
-    if (addUserForm) {
-        addUserForm.onsubmit = function(e) {
-            e.preventDefault();
-            users.push({username: this['new-username'].value, password: this['new-password'].value});
-            localStorage.setItem('users', JSON.stringify(users));
-            renderUsers();
-            this.reset();
-        }
-    }
 
     // Settings
-    const settingsForm = document.getElementById('settings-form');
-    if (settingsForm) {
-        settingsForm.onsubmit = function(e) {
-            e.preventDefault();
-            document.title = this['site-title'].value;
-            localStorage.setItem('siteTitle', this['site-title'].value);
-            if (this['theme-select'].value === 'dark') {
-                document.body.style.background = '#222';
-                document.body.style.color = '#eee';
-            } else {
-                document.body.style.background = '';
-                document.body.style.color = '';
+    function initSettingsForm() {
+        const settingsForm = document.getElementById('settings-form');
+        if (settingsForm) {
+            settingsForm.onsubmit = function(e) {
+                e.preventDefault();
+                document.title = this['site-title'].value;
+                localStorage.setItem('siteTitle', this['site-title'].value);
+                if (this['theme-select'].value === 'dark') {
+                    document.body.style.background = '#222';
+                    document.body.style.color = '#eee';
+                } else {
+                    document.body.style.background = '';
+                    document.body.style.color = '';
+                }
             }
         }
     }
 
-    // Admin Login
-    const adminLoginForm = document.getElementById('admin-login-form');
-    const adminDashboard = document.getElementById('admin-dashboard');
+    // Admin Panel logic (login, tab switching, content editor buttons)
+    function initAdminPanel() {
+        // Login
+        const adminLoginForm = document.getElementById('admin-login-form');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        if (adminLoginForm && adminDashboard) {
+            adminLoginForm.onsubmit = function(e) {
+                e.preventDefault();
+                const u = this['admin-username'].value;
+                const p = this['admin-password'].value;
+                if (users.find(user => user.username === u && user.password === p)) {
+                    localStorage.setItem('adminLoggedIn', 'true');
+                    doAdminLogin();
+                } else {
+                    alert('Invalid credentials');
+                }
+            }
+        }
+        // Tab Switching
+        const adminTabs = document.querySelectorAll('.admin-tab');
+        const adminSections = document.querySelectorAll('.admin-section');
+        adminTabs.forEach(tab => {
+            tab.onclick = function() {
+                adminTabs.forEach(t => t.classList.remove('active'));
+                adminSections.forEach(s => s.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('admin-' + tab.dataset.tab).classList.add('active');
+            }
+        });
+        // Content Editor Buttons
+        const enableEditBtn = document.getElementById('enable-edit-btn');
+        const saveContentBtn = document.getElementById('save-content-btn');
+        const disableEditBtn = document.getElementById('disable-edit-btn');
+        if (enableEditBtn) enableEditBtn.onclick = () => setEditable(true);
+        if (saveContentBtn) saveContentBtn.onclick = saveContent;
+        if (disableEditBtn) disableEditBtn.onclick = () => setEditable(false);
+        // User/Ecom forms
+        const addUserForm = document.getElementById('add-user-form');
+        if (addUserForm) {
+            addUserForm.onsubmit = function(e) {
+                e.preventDefault();
+                users.push({username: this['new-username'].value, password: this['new-password'].value});
+                localStorage.setItem('users', JSON.stringify(users));
+                renderUsers();
+                this.reset();
+            }
+        }
+        const addServiceForm = document.getElementById('add-service-form');
+        if (addServiceForm) {
+            addServiceForm.onsubmit = function(e) {
+                e.preventDefault();
+                services.push({
+                    title: this['service-title'].value,
+                    price: this['service-price'].value,
+                    upi: this['service-upi'].value
+                });
+                localStorage.setItem('services', JSON.stringify(services));
+                renderServices();
+                this.reset();
+            }
+        }
+        initSettingsForm();
+    }
+
     function doAdminLogin() {
+        const adminLoginForm = document.getElementById('admin-login-form');
+        const adminDashboard = document.getElementById('admin-dashboard');
         if (adminLoginForm && adminDashboard) {
             adminLoginForm.classList.add('fadeOut');
             setTimeout(() => {
@@ -733,48 +776,12 @@
             }, 700);
         }
     }
-    if (adminLoginForm && adminDashboard) {
-        adminLoginForm.onsubmit = function(e) {
-            e.preventDefault();
-            const u = this['admin-username'].value;
-            const p = this['admin-password'].value;
-            if (users.find(user => user.username === u && user.password === p)) {
-                localStorage.setItem('adminLoggedIn', 'true');
-                doAdminLogin();
-            } else {
-                alert('Invalid credentials');
-            }
-        }
-    }
     // Remember login
     function checkAdminLogin() {
         if (localStorage.getItem('adminLoggedIn') === 'true') {
             doAdminLogin();
         }
     }
-
-    // Logout on page unload (optional, remove if you want persistent login across browser restarts)
-    // window.addEventListener('beforeunload', () => localStorage.removeItem('adminLoggedIn'));
-
-    // Tab Switching
-    const adminTabs = document.querySelectorAll('.admin-tab');
-    const adminSections = document.querySelectorAll('.admin-section');
-    adminTabs.forEach(tab => {
-        tab.onclick = function() {
-            adminTabs.forEach(t => t.classList.remove('active'));
-            adminSections.forEach(s => s.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById('admin-' + tab.dataset.tab).classList.add('active');
-        }
-    });
-
-    // Content Editor Buttons
-    const enableEditBtn = document.getElementById('enable-edit-btn');
-    const saveContentBtn = document.getElementById('save-content-btn');
-    const disableEditBtn = document.getElementById('disable-edit-btn');
-    if (enableEditBtn) enableEditBtn.onclick = () => setEditable(true);
-    if (saveContentBtn) saveContentBtn.onclick = saveContent;
-    if (disableEditBtn) disableEditBtn.onclick = () => setEditable(false);
 
     // Load saved content/settings on page load
     window.addEventListener('DOMContentLoaded', () => {
@@ -785,6 +792,7 @@
         renderServices();
         showAdminPanelIfHash();
         checkAdminLogin();
+        initAdminPanel();
     });
 
     // E-commerce Buy Now handler
@@ -805,7 +813,10 @@
             adminPanel.classList.add('hidden');
         }
     }
-    window.addEventListener('hashchange', showAdminPanelIfHash);
+    window.addEventListener('hashchange', () => {
+        showAdminPanelIfHash();
+        initAdminPanel();
+    });
     </script>
     <script src="scripts/services.js"></script>
 </body>
