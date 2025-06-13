@@ -740,6 +740,50 @@
         }
     });
 
+    // Service Modal Logic
+    function showServiceModal(service) {
+        document.getElementById('service-modal-title').textContent = service.title || service.name;
+        document.getElementById('service-modal-details').innerHTML = `
+            <p><b>Price:</b> ₹${service.price}</p>
+            ${service.upi ? `<p><b>UPI Link:</b> <a href="${service.upi}" target="_blank">${service.upi}</a></p>` : ''}
+        `;
+        document.getElementById('service-modal').classList.remove('hidden');
+    }
+    function hideServiceModal() {
+        document.getElementById('service-modal').classList.add('hidden');
+    }
+    document.getElementById('close-service-modal').onclick = hideServiceModal;
+
+    // Attach click handler to all .service and .buy-now buttons
+    document.body.addEventListener('click', function(e) {
+        // For .buy-now button
+        if (e.target.classList.contains('buy-now')) {
+            e.preventDefault();
+            // Find service info from localStorage or DOM
+            let services = JSON.parse(localStorage.getItem('services') || '[]');
+            let title = e.target.getAttribute('data-service');
+            let service = services.find(s => s.title === title || s.name === title);
+            if (!service) {
+                // fallback: try to get from DOM
+                service = {
+                    title: title,
+                    price: e.target.parentElement.querySelector('p')?.textContent.replace(/\D/g, '') || '',
+                    upi: e.target.getAttribute('data-upi') || ''
+                };
+            }
+            showServiceModal(service);
+            return;
+        }
+        // For .service card click (optional, if you want the whole card clickable)
+        if (e.target.classList.contains('service')) {
+            let title = e.target.querySelector('h3')?.textContent;
+            let price = e.target.querySelector('p')?.textContent.replace(/\D/g, '');
+            let upi = e.target.querySelector('.buy-now')?.getAttribute('data-upi') || '';
+            showServiceModal({ title, price, upi });
+            return;
+        }
+    });
+
     // Show admin panel when navigating to #admin-panel
     function showAdminPanelIfHash() {
         const adminPanel = document.getElementById('admin-panel');

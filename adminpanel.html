@@ -193,11 +193,16 @@
                 <button class="admin-tab" data-tab="settings">Settings</button>
             </div>
             <div id="admin-content" class="admin-section active">
-                <p>Edit the main website by clicking <b>Enable Edit</b>, then <b>Save All</b> to persist changes.</p>
+                <p>Edit any website page by selecting it, clicking <b>Enable Edit</b>, then <b>Save All</b> to persist changes.</p>
+                <div style="margin-bottom:12px;">
+                    <label for="page-selector"><b>Page Selector:</b></label>
+                    <select id="page-selector" style="margin-right:8px;"></select>
+                    <button id="create-page-btn" style="background:#2ecc71;">Create New Page</button>
+                </div>
                 <button id="enable-edit-btn">Enable Edit</button>
                 <button id="save-content-btn">Save All</button>
                 <button id="disable-edit-btn">Disable Edit</button>
-                <div class="info-note">(Edits apply to the main site. Reload the main site to see changes.)</div>
+                <div class="info-note">(Edits apply to the selected page. Reload the site to see changes.)</div>
                 <div id="editable-main-content" style="margin-top:24px;background:#f8fafc;border:1.5px solid #dbeafe;border-radius:8px;padding:18px 16px;min-height:200px;max-height:60vh;overflow-y:auto;font-size:1.05em;"></div>
             </div>
             <div id="admin-ecom" class="admin-section">
@@ -254,11 +259,45 @@
     <script>
     // --- Admin Panel Standalone Functionality (GitHub Pages compatible) ---
 
-    // Content Editor for main site
+    // --- Advanced Content Editor: Multi-page support ---
+    const PAGE_KEY_PREFIX = 'pageContent:';
+    const defaultPages = [
+        'index.html',
+        'adminpanel.html'
+        // Add more default pages here if needed
+    ];
+    function getAllPages() {
+        // Get all keys from localStorage that start with PAGE_KEY_PREFIX
+        const keys = Object.keys(localStorage).filter(k => k.startsWith(PAGE_KEY_PREFIX));
+        const pages = keys.map(k => k.replace(PAGE_KEY_PREFIX, ''));
+        // Add default pages if not present
+        defaultPages.forEach(p => { if (!pages.includes(p)) pages.push(p); });
+        return pages;
+    }
+    function getCurrentPage() {
+        return document.getElementById('page-selector').value;
+    }
+    function setCurrentPage(page) {
+        document.getElementById('page-selector').value = page;
+        loadMainContent();
+    }
+    function updatePageSelector() {
+        const selector = document.getElementById('page-selector');
+        const pages = getAllPages();
+        selector.innerHTML = pages.map(p => `<option value="${p}">${p}</option>`).join('');
+    }
     function loadMainContent() {
         const mainContent = document.getElementById('editable-main-content');
-        if (mainContent) {
-            mainContent.innerHTML = localStorage.getItem('mainContent') || '<p>Welcome to Vishal Thakur\'s site!</p>';
+        const page = getCurrentPage();
+        if (mainContent && page) {
+            const content = localStorage.getItem(PAGE_KEY_PREFIX + page);
+            if (content !== null) {
+                mainContent.innerHTML = content;
+            } else if (page === 'index.html') {
+                mainContent.innerHTML = localStorage.getItem('mainContent') || '<p>Welcome to Vishal Thakur\'s site!</p>';
+            } else {
+                mainContent.innerHTML = `<p>New page: <b>${page}</b></p>`;
+            }
             mainContent.removeAttribute('contenteditable');
         }
     }
@@ -275,15 +314,45 @@
     }
     function saveContent() {
         const mainContent = document.getElementById('editable-main-content');
-        if (mainContent) {
-            localStorage.setItem('mainContent', mainContent.innerHTML);
-            alert('Content saved! Reload the main site to see changes.');
+        const page = getCurrentPage();
+        if (mainContent && page) {
+            if (page === 'index.html') {
+                localStorage.setItem('mainContent', mainContent.innerHTML);
+            }
+            localStorage.setItem(PAGE_KEY_PREFIX + page, mainContent.innerHTML);
+            alert('Content saved for ' + page + '! Reload the site to see changes.');
             mainContent.removeAttribute('contenteditable');
         }
     }
     function disableEdit() {
         setEditable(false);
     }
+    document.getElementById('enable-edit-btn').onclick = function() { setEditable(true); };
+    document.getElementById('save-content-btn').onclick = function() { saveContent(); };
+    document.getElementById('disable-edit-btn').onclick = function() { disableEdit(); };
+
+    // Page selector events
+    document.getElementById('page-selector').onchange = function() {
+        loadMainContent();
+    };
+    document.getElementById('create-page-btn').onclick = function() {
+        const page = prompt('Enter new page name (e.g., about.html):');
+        if (!page) return;
+        if (!/^[a-zA-Z0-9_\-]+\.html$/.test(page)) {
+            alert('Invalid page name. Use only letters, numbers, -, _, and end with .html');
+            return;
+        }
+        const pages = getAllPages();
+        if (pages.includes(page)) {
+            alert('Page already exists!');
+            return;
+        }
+        localStorage.setItem(PAGE_KEY_PREFIX + page, `<h2>New Page: ${page}</h2><p>Edit this page content.</p>`);
+        updatePageSelector();
+        setCurrentPage(page);
+    };
+
+    // --- End Advanced Content Editor ---
 
     // Helpers for localStorage
     function getLS(key, fallback) {
@@ -316,7 +385,13 @@
         addUserForm.onsubmit = function(e) {
             e.preventDefault();
             const users = getLS('users', []);
-            users.push({ username: this['new-username'].value, password: this['new-password'].value });
+            const username = this['new-username'].value;
+            const password = this['new-password'].value;
+            if (users.some(u => u.username === username)) {
+                alert('User already exists!');
+                return;
+            }
+            users.push({ username, password });
             setLS('users', users);
             renderUsers();
             this.reset();
@@ -330,7 +405,7 @@
         if (ecomList) {
             ecomList.innerHTML = services.map((s, i) =>
                 `<div>
-                    <span><b>${s.name}</b> - ₹${s.price}</span>
+                    <span><b>${s.name}</b> - ₹${s.price} <span style="color:#888;font-size:0.95em;">[${s.upi || ''}]</span></span>
                     <button onclick="removeService('${s.name}')">Remove</button>
                 </div>`
             ).join('');
@@ -347,7 +422,14 @@
         addServiceForm.onsubmit = function(e) {
             e.preventDefault();
             const products = getLS('products', []);
-            products.push({ name: this['service-title'].value, price: this['service-price'].value });
+            const name = this['service-title'].value;
+            const price = this['service-price'].value;
+            const upi = this['service-upi'].value;
+            if (products.some(p => p.name === name)) {
+                alert('Service already exists!');
+                return;
+            }
+            products.push({ name, price, upi });
             setLS('products', products);
             renderServices();
             this.reset();
@@ -375,9 +457,24 @@
     async function renderMessages() {
         const messages = getLS('messages', []);
         const list = document.getElementById('messages-list');
-        list.innerHTML = messages.map(m =>
-            `<div><b>${m.from}</b> to <b>${m.to}</b>: ${m.text} <span style="color:#888;font-size:0.9em;">${m.timestamp}</span></div>`
-        ).join('');
+        if (list) {
+            list.innerHTML = messages.map(m =>
+                `<div><b>${m.from}</b> to <b>${m.to}</b>: ${m.text} <span style="color:#888;font-size:0.9em;">${m.timestamp}</span>
+                <button onclick="removeMessage(${m.id})" style="background:#e74c3c;padding:2px 10px;border-radius:3px;font-size:0.9em;">Delete</button>
+                </div>`
+            ).join('');
+        }
+    }
+    function getNextMsgId() {
+        let id = parseInt(localStorage.getItem('msgIdCounter') || '1', 10);
+        localStorage.setItem('msgIdCounter', (id + 1).toString());
+        return id;
+    }
+    window.removeMessage = function(id) {
+        let messages = getLS('messages', []);
+        messages = messages.filter(m => m.id !== id);
+        setLS('messages', messages);
+        renderMessages();
     }
     const sendMessageForm = document.getElementById('send-message-form');
     if (sendMessageForm) {
@@ -385,6 +482,7 @@
             e.preventDefault();
             const messages = getLS('messages', []);
             messages.push({
+                id: getNextMsgId(),
                 from: 'admin',
                 to: this['msg-to'].value,
                 text: this['msg-text'].value,
@@ -404,20 +502,36 @@
             const fileInput = document.getElementById('file-input');
             if (fileInput.files.length > 0) {
                 const files = getLS('files', []);
-                files.push(fileInput.files[0].name);
+                const name = fileInput.files[0].name;
+                if (files.includes(name)) {
+                    alert('File already uploaded!');
+                    return;
+                }
+                files.push(name);
                 setLS('files', files);
-                alert('File uploaded: ' + fileInput.files[0].name);
+                alert('File uploaded: ' + name);
                 renderFiles();
+                this.reset();
             }
         }
     }
     async function renderFiles() {
         const files = getLS('files', []);
         const fileList = document.getElementById('file-list');
-        fileList.innerHTML = files.map(f => `<li>${f}</li>`).join('');
+        if (fileList) {
+            fileList.innerHTML = files.map(f =>
+                `<li>${f} <button onclick="removeFile('${f}')" style="background:#e74c3c;padding:2px 10px;border-radius:3px;font-size:0.9em;">Delete</button></li>`
+            ).join('');
+        }
+    }
+    window.removeFile = function(name) {
+        let files = getLS('files', []);
+        files = files.filter(f => f !== name);
+        setLS('files', files);
+        renderFiles();
     }
 
-    // Tab Switching (add new tabs)
+    // Tab Switching (refresh content on tab switch)
     const adminTabs = document.querySelectorAll('.admin-tab');
     const adminSections = document.querySelectorAll('.admin-section');
     adminTabs.forEach(tab => {
@@ -427,10 +541,13 @@
             tab.classList.add('active');
             document.getElementById('admin-' + tab.dataset.tab).classList.add('active');
             if (tab.dataset.tab === 'content') {
+                updatePageSelector();
                 loadMainContent();
             }
             if (tab.dataset.tab === 'messages') renderMessages();
             if (tab.dataset.tab === 'files') renderFiles();
+            if (tab.dataset.tab === 'users') renderUsers();
+            if (tab.dataset.tab === 'ecom') renderServices();
         }
     });
 
@@ -453,7 +570,10 @@
                     logoutBtn.classList.remove('hidden');
                     renderUsers();
                     renderServices();
-                    loadMainContent();
+                    updatePageSelector();
+                    setCurrentPage('index.html');
+                    renderMessages();
+                    renderFiles();
                 }, 700);
             } else {
                 alert('Invalid credentials');
@@ -470,7 +590,10 @@
     window.addEventListener('DOMContentLoaded', () => {
         renderUsers();
         renderServices();
-        loadMainContent();
+        updatePageSelector();
+        setCurrentPage('index.html');
+        renderMessages();
+        renderFiles();
     });
     </script>
 </body>
