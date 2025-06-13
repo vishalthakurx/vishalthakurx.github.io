@@ -1,378 +1,202 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <link rel="stylesheet" href="styles/admin-panel.css">
-    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <div class="admin-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h1><i class="fa-solid fa-user-shield"></i> Admin</h1>
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="index.html"><i class="fa fa-home"></i> Home</a></li>
-                    <li><a href="#dashboard"><i class="fa fa-chart-line"></i> Dashboard</a></li>
-                    <li><a href="#users"><i class="fa fa-users"></i> Users</a></li>
-                    <li><a href="#products"><i class="fa fa-box"></i> Products</a></li>
-                    <li><a href="#services"><i class="fa fa-concierge-bell"></i> Services</a></li>
-                    <li><a href="#analytics"><i class="fa fa-chart-pie"></i> Analytics</a></li>
-                    <li><a href="#settings"><i class="fa fa-cog"></i> Settings</a></li>
-                </ul>
-            </nav>
-        </aside>
-        <main class="main-content">
-            <section id="admin-login-section" class="card center">
-                <h2>Admin Login</h2>
-                <form id="admin-login-form" class="form-modern" autocomplete="off" aria-labelledby="admin-login-section">
-                    <div class="form-group">
-                        <label for="admin-username"><i class="fa fa-user"></i> Username</label>
-                        <input type="text" id="admin-username" required pattern="^[a-zA-Z0-9_]{4,16}$" aria-required="true" aria-describedby="username-help">
-                        <small id="username-help" class="form-text">4-16 chars, letters, numbers, underscores.</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="admin-password"><i class="fa fa-lock"></i> Password</label>
-                        <div style="position:relative;">
-                            <input type="password" id="admin-password" required aria-required="true" autocomplete="current-password">
-                            <button type="button" id="toggle-password" aria-label="Show/Hide Password" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;">
-                                <i class="fa fa-eye" id="toggle-password-icon"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-primary">Login</button>
-                </form>
-            </section>
-            <section id="admin-dashboard" class="hidden">
-                <section id="dashboard">
-                    <h2>Dashboard</h2>
-                    <div class="dashboard-cards">
-                        <div class="dashboard-card">
-                            <div class="card-icon"><i class="fa fa-users"></i></div>
-                            <div>
-                                <div class="card-title">Total Users</div>
-                                <div class="card-value" id="dashboard-total-users">0</div>
-                            </div>
-                        </div>
-                        <div class="dashboard-card">
-                            <div class="card-icon"><i class="fa fa-box"></i></div>
-                            <div>
-                                <div class="card-title">Total Products</div>
-                                <div class="card-value" id="dashboard-total-products">0</div>
-                            </div>
-                        </div>
-                        <div class="dashboard-card">
-                            <div class="card-icon"><i class="fa fa-chart-pie"></i></div>
-                            <div>
-                                <div class="card-title">Active Sessions</div>
-                                <div class="card-value" id="dashboard-active-sessions">0</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <section id="users">
-                    <div class="section-header">
-                        <h2>User Management</h2>
-                        <button id="add-user-btn" class="btn-secondary"><i class="fa fa-plus"></i> Add User</button>
-                    </div>
-                    <ul id="user-list" class="list-modern"></ul>
-                </section>
-                <section id="products">
-                    <div class="section-header">
-                        <h2>Product Management</h2>
-                        <button id="add-product-btn" class="btn-secondary"><i class="fa fa-plus"></i> Add Product</button>
-                    </div>
-                    <ul id="product-list" class="list-modern"></ul>
-                </section>
-                <section id="services">
-                    <div class="section-header">
-                        <h2>Service Management</h2>
-                        <button id="add-service-btn" class="btn-secondary"><i class="fa fa-plus"></i> Add Service</button>
-                    </div>
-                    <ul id="service-list" class="list-modern"></ul>
-                </section>
-                <section id="analytics">
-                    <h2>Analytics</h2>
-                    <div class="analytics-controls">
-                        <button id="refresh-analytics" class="btn-secondary"><i class="fa fa-sync"></i> Refresh</button>
-                        <button id="reset-analytics" class="btn-danger"><i class="fa fa-trash"></i> Reset</button>
-                    </div>
-                    <canvas id="analytics-chart" style="max-width: 100%; background: #fff; border-radius: 8px; margin-top: 20px;"></canvas>
-                </section>
-                <section id="settings">
-                    <h2>Settings</h2>
-                    <form id="settings-form">
-                        <div class="form-group">
-                            <label for="theme-select"><i class="fa fa-paint-brush"></i> Theme</label>
-                            <select id="theme-select">
-                                <option value="light">Light</option>
-                                <option value="dark">Dark</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="notifications-toggle"><i class="fa fa-bell"></i> Notifications</label>
-                            <input type="checkbox" id="notifications-toggle">
-                        </div>
-                        <button type="submit" class="btn-primary"><i class="fa fa-save"></i> Save Settings</button>
-                    </form>
-                    <button id="logout-btn" class="btn-danger" style="margin-top:20px;"><i class="fa fa-sign-out-alt"></i> Logout</button>
-                </section>
-                <section id="view-logs-section">
-                    <h2>View Logs</h2>
-                    <button onclick="refreshLogs()">Refresh Logs</button>
-                    <button onclick="clearLogs()">Clear Logs</button>
-                    <table id="view-logs-table" border="1">
-                        <thead>
-                            <tr>
-                                <th>Label</th>
-                                <th>Timestamp</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Logs will be inserted here -->
-                        </tbody>
-                    </table>
-                </section>
-            </section>
-        </main>
-    </div>
-    <!-- Modal for Add User/Product -->
-    <div id="modal-overlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <div id="modal-content">
-            <h3 id="modal-title"></h3>
-            <form id="modal-form">
-                <!-- Dynamic form fields will be injected here -->
-            </form>
-            <div style="margin-top:16px;">
-                <button id="modal-save-btn" class="btn-primary">Save</button>
-                <button id="modal-cancel-btn" class="btn-secondary">Cancel</button>
-            </div>
+<script>
+// --- User Management ---
+const addUserBtn = document.getElementById('add-user-btn');
+const userList = document.getElementById('user-list');
+let users = JSON.parse(localStorage.getItem('admin_users') || '[]');
+
+addUserBtn.addEventListener('click', function() {
+    openUserModal();
+});
+
+function openUserModal(user = null, idx = null) {
+    modalTitle.textContent = user ? 'Edit User' : 'Add User';
+    modalForm.innerHTML = `
+        <div class="form-group">
+            <label for="user-username">Username</label>
+            <input type="text" id="user-username" required pattern="^[a-zA-Z0-9_]{4,16}$" value="${user ? user.username : ''}">
         </div>
-    </div>
-    <div id="admin-toast" style="display:none;position:fixed;bottom:30px;right:30px;padding:1rem 2rem;background:#27ae60;color:#fff;border-radius:8px;font-weight:bold;z-index:9999;"></div>
-    <script src="scripts/admin-panel.js"></script>
-    <script src="scripts/admin-modal.js"></script>
-    <script src="scripts/admin-services.js"></script>
-    <script src="viewLogger.js"></script>
-    <!-- Admin login logic -->
-    <script>
-        // Admin login credentials
-        const ADMIN_USERNAME = 'cobra';
-        const ADMIN_PASSWORD = '1234';
-
-        const loginSection = document.getElementById('admin-login-section');
-        const dashboardSection = document.getElementById('admin-dashboard');
-        const loginForm = document.getElementById('admin-login-form');
-        const passwordInput = document.getElementById('admin-password');
-        const togglePasswordBtn = document.getElementById('toggle-password');
-        const togglePasswordIcon = document.getElementById('toggle-password-icon');
-        const logoutBtn = document.getElementById('logout-btn');
-
-        // Always start with login visible, dashboard hidden
-        window.addEventListener('DOMContentLoaded', () => {
-            loginSection.classList.remove('hidden');
-            dashboardSection.classList.add('hidden');
-        });
-
-        // Prevent navigation to dashboard before login
-        document.querySelectorAll('.sidebar nav ul li a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                if (dashboardSection.classList.contains('hidden') && this.getAttribute('href').startsWith('#')) {
-                    e.preventDefault();
-                    showToast('Please login first.');
-                }
-            });
-        });
-
-        // Toggle password visibility
-        togglePasswordBtn.addEventListener('click', function() {
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                togglePasswordIcon.classList.remove('fa-eye');
-                togglePasswordIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                togglePasswordIcon.classList.remove('fa-eye-slash');
-                togglePasswordIcon.classList.add('fa-eye');
-            }
-        });
-
-        // Handle login form submit
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('admin-username').value.trim();
-            const password = passwordInput.value;
-            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                loginSection.classList.add('hidden');
-                dashboardSection.classList.remove('hidden');
-                showToast('Login successful!');
-                // Optionally, clear password field
-                passwordInput.value = '';
-            } else {
-                showToast('Invalid username or password.');
-            }
-        });
-
-        // Handle logout
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function() {
-                dashboardSection.classList.add('hidden');
-                loginSection.classList.remove('hidden');
-                loginForm.reset();
-                passwordInput.value = '';
-                showToast('Logged out.');
-            });
+        <div class="form-group">
+            <label for="user-role">Role</label>
+            <select id="user-role">
+                <option value="admin"${user && user.role === 'admin' ? ' selected' : ''}>Admin</option>
+                <option value="editor"${user && user.role === 'editor' ? ' selected' : ''}>Editor</option>
+                <option value="viewer"${user && user.role === 'viewer' ? ' selected' : ''}>Viewer</option>
+            </select>
+        </div>
+    `;
+    modalOverlay.classList.remove('hidden');
+    modalSaveBtn.onclick = function(e) {
+        e.preventDefault();
+        const username = document.getElementById('user-username').value.trim();
+        const role = document.getElementById('user-role').value;
+        if (!username) {
+            showToast('Please enter a username.');
+            return;
         }
+        if (user) {
+            users[idx] = { username, role };
+        } else {
+            users.push({ username, role });
+        }
+        localStorage.setItem('admin_users', JSON.stringify(users));
+        renderUserList();
+        closeModal();
+        showToast(user ? 'User updated.' : 'User added.');
+    };
+}
 
-        function showToast(message) {
-            const toast = document.getElementById('admin-toast');
-            toast.textContent = message;
-            toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 2000);
-        }
+function renderUserList() {
+    userList.innerHTML = '';
+    users.forEach((user, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            ${user.username} <span style="color:#888;">(${user.role})</span>
+            <button class="btn-secondary" style="margin-left:8px;" onclick="editUser(${idx})"><i class="fa fa-edit"></i></button>
+            <button class="btn-danger" style="margin-left:4px;" onclick="deleteUser(${idx})"><i class="fa fa-trash"></i></button>
+        `;
+        userList.appendChild(li);
+    });
+    document.getElementById('dashboard-total-users').textContent = users.length;
+}
+window.editUser = function(idx) {
+    openUserModal(users[idx], idx);
+};
+window.deleteUser = function(idx) {
+    if (confirm('Delete this user?')) {
+        users.splice(idx, 1);
+        localStorage.setItem('admin_users', JSON.stringify(users));
+        renderUserList();
+        showToast('User deleted.');
+    }
+};
+window.addEventListener('DOMContentLoaded', renderUserList);
 
-        // DARK MODE SWITCH
-        const themeSelect = document.getElementById('theme-select');
-        themeSelect.addEventListener('change', function() {
-            if (this.value === 'dark') {
-                document.body.classList.add('dark-mode');
-                localStorage.setItem('admin-theme', 'dark');
-            } else {
-                document.body.classList.remove('dark-mode');
-                localStorage.setItem('admin-theme', 'light');
-            }
-        });
-        // On load, apply saved theme
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('admin-theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                themeSelect.value = 'dark';
-            }
-        });
+// --- Product Edit/Delete ---
+function renderProductList() {
+    productList.innerHTML = '';
+    products.forEach((product, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            ${product.name} - ₹${product.price}
+            <button class="btn-secondary" style="margin-left:8px;" onclick="editProduct(${idx})"><i class="fa fa-edit"></i></button>
+            <button class="btn-danger" style="margin-left:4px;" onclick="deleteProduct(${idx})"><i class="fa fa-trash"></i></button>
+        `;
+        productList.appendChild(li);
+    });
+    document.getElementById('dashboard-total-products').textContent = products.length;
+    localStorage.setItem('admin_products', JSON.stringify(products));
+}
+window.editProduct = function(idx) {
+    openProductModal(products[idx], idx);
+};
+window.deleteProduct = function(idx) {
+    if (confirm('Delete this product?')) {
+        products.splice(idx, 1);
+        renderProductList();
+        showToast('Product deleted.');
+    }
+};
+// Load products from localStorage
+products = JSON.parse(localStorage.getItem('admin_products') || '[]');
+window.addEventListener('DOMContentLoaded', renderProductList);
 
-        // ADD PRODUCT FLOW
-        const addProductBtn = document.getElementById('add-product-btn');
-        const modalOverlay = document.getElementById('modal-overlay');
-        const modalTitle = document.getElementById('modal-title');
-        const modalForm = document.getElementById('modal-form');
-        const modalSaveBtn = document.getElementById('modal-save-btn');
-        const modalCancelBtn = document.getElementById('modal-cancel-btn');
-        const productList = document.getElementById('product-list');
-        let products = [];
+// Update openProductModal to support editing
+function openProductModal(product = null, idx = null) {
+    modalTitle.textContent = product ? 'Edit Product' : 'Add Product';
+    modalForm.innerHTML = `
+        <div class="form-group">
+            <label for="product-name">Name</label>
+            <input type="text" id="product-name" required value="${product ? product.name : ''}">
+        </div>
+        <div class="form-group">
+            <label for="product-price">Price</label>
+            <input type="number" id="product-price" required min="0" value="${product ? product.price : ''}">
+        </div>
+    `;
+    modalOverlay.classList.remove('hidden');
+    modalSaveBtn.onclick = function(e) {
+        e.preventDefault();
+        const name = document.getElementById('product-name').value.trim();
+        const price = parseFloat(document.getElementById('product-price').value);
+        if (!name || isNaN(price)) {
+            showToast('Please enter valid product details.');
+            return;
+        }
+        if (product && idx !== null) {
+            products[idx] = { name, price };
+        } else {
+            products.push({ name, price });
+        }
+        renderProductList();
+        closeModal();
+        showToast(product ? 'Product updated.' : 'Product added.');
+    };
+}
 
-        addProductBtn.addEventListener('click', function() {
-            openProductModal();
-        });
+// --- Service Management ---
+const addServiceBtn = document.getElementById('add-service-btn');
+const serviceList = document.getElementById('service-list');
+let services = JSON.parse(localStorage.getItem('admin_services') || '[]');
 
-        function openProductModal(product = null) {
-            modalTitle.textContent = product ? 'Edit Product' : 'Add Product';
-            modalForm.innerHTML = `
-                <div class="form-group">
-                    <label for="product-name">Name</label>
-                    <input type="text" id="product-name" required value="${product ? product.name : ''}">
-                </div>
-                <div class="form-group">
-                    <label for="product-price">Price</label>
-                    <input type="number" id="product-price" required min="0" value="${product ? product.price : ''}">
-                </div>
-            `;
-            modalOverlay.classList.remove('hidden');
-            modalSaveBtn.onclick = function(e) {
-                e.preventDefault();
-                const name = document.getElementById('product-name').value.trim();
-                const price = parseFloat(document.getElementById('product-price').value);
-                if (!name || isNaN(price)) {
-                    showToast('Please enter valid product details.');
-                    return;
-                }
-                if (product) {
-                    product.name = name;
-                    product.price = price;
-                } else {
-                    products.push({ name, price });
-                }
-                renderProductList();
-                closeModal();
-                showToast(product ? 'Product updated.' : 'Product added.');
-            };
-        }
+addServiceBtn.addEventListener('click', function() {
+    openServiceModal();
+});
 
-        modalCancelBtn.onclick = closeModal;
-        modalOverlay.onclick = function(e) {
-            if (e.target === modalOverlay) closeModal();
-        };
-        function closeModal() {
-            modalOverlay.classList.add('hidden');
-            modalForm.innerHTML = '';
+function openServiceModal(service = null, idx = null) {
+    modalTitle.textContent = service ? 'Edit Service' : 'Add Service';
+    modalForm.innerHTML = `
+        <div class="form-group">
+            <label for="service-name">Name</label>
+            <input type="text" id="service-name" required value="${service ? service.name : ''}">
+        </div>
+        <div class="form-group">
+            <label for="service-desc">Description</label>
+            <input type="text" id="service-desc" required value="${service ? service.desc : ''}">
+        </div>
+    `;
+    modalOverlay.classList.remove('hidden');
+    modalSaveBtn.onclick = function(e) {
+        e.preventDefault();
+        const name = document.getElementById('service-name').value.trim();
+        const desc = document.getElementById('service-desc').value.trim();
+        if (!name || !desc) {
+            showToast('Please enter valid service details.');
+            return;
         }
+        if (service && idx !== null) {
+            services[idx] = { name, desc };
+        } else {
+            services.push({ name, desc });
+        }
+        localStorage.setItem('admin_services', JSON.stringify(services));
+        renderServiceList();
+        closeModal();
+        showToast(service ? 'Service updated.' : 'Service added.');
+    };
+}
 
-        function renderProductList() {
-            productList.innerHTML = '';
-            products.forEach((product, idx) => {
-                const li = document.createElement('li');
-                li.textContent = `${product.name} - ₹${product.price}`;
-                productList.appendChild(li);
-            });
-            document.getElementById('dashboard-total-products').textContent = products.length;
-        }
-
-        // Initialize product list on load
-        window.addEventListener('DOMContentLoaded', renderProductList);
-    </script>
-    <script>
-        function renderLogs() {
-            const logs = window.viewLogger.getViewLogs();
-            const tbody = document.getElementById('view-logs-table').querySelector('tbody');
-            tbody.innerHTML = '';
-            logs.forEach(log => {
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${log.label}</td><td>${log.timestamp}</td>`;
-                tbody.appendChild(row);
-            });
-        }
-        function refreshLogs() {
-            renderLogs();
-        }
-        function clearLogs() {
-            window.viewLogger.clearViewLogs();
-            renderLogs();
-        }
-        // Initial render
-        renderLogs();
-    </script>
-    <style>
-        /* Minimal dark mode styles */
-        body.dark-mode {
-            background: #181c24 !important;
-            color: #f1f1f1 !important;
-        }
-        body.dark-mode .card,
-        body.dark-mode .main-content,
-        body.dark-mode .sidebar,
-        body.dark-mode #modal-content {
-            background: #23272f !important;
-            color: #f1f1f1 !important;
-        }
-        body.dark-mode input,
-        body.dark-mode select,
-        body.dark-mode textarea {
-            background: #23272f !important;
-            color: #f1f1f1 !important;
-            border-color: #444 !important;
-        }
-        body.dark-mode .btn-primary,
-        body.dark-mode .btn-secondary,
-        body.dark-mode .btn-danger {
-            filter: brightness(0.9);
-        }
-    </style>
-</body>
-</html>
+function renderServiceList() {
+    serviceList.innerHTML = '';
+    services.forEach((service, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            ${service.name} - <span style="color:#888;">${service.desc}</span>
+            <button class="btn-secondary" style="margin-left:8px;" onclick="editService(${idx})"><i class="fa fa-edit"></i></button>
+            <button class="btn-danger" style="margin-left:4px;" onclick="deleteService(${idx})"><i class="fa fa-trash"></i></button>
+        `;
+        serviceList.appendChild(li);
+    });
+}
+window.editService = function(idx) {
+    openServiceModal(services[idx], idx);
+};
+window.deleteService = function(idx) {
+    if (confirm('Delete this service?')) {
+        services.splice(idx, 1);
+        localStorage.setItem('admin_services', JSON.stringify(services));
+        renderServiceList();
+        showToast('Service deleted.');
+    }
+};
+window.addEventListener('DOMContentLoaded', renderServiceList);
+</script>
