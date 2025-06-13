@@ -373,6 +373,11 @@
                     <p>Starting at ₹50,000</p>
                     <button class="buy-now" data-service="Custom Software Development" data-upi="upi://pay?pa=example@upi&pn=Vishal%20Thakur&mc=0000&tid=123456789&tr=txn125&tn=Custom%20Software%20Development&am=50000&cu=INR">Buy Now</button>
                 </div>
+                <div id="payment-methods">
+                    <label for="upiId">UPI ID:</label>
+                    <input type="text" id="upiId" name="upiId" placeholder="Enter your UPI ID">
+                    <button onclick="initiateUPIPayment()">Pay via UPI</button>
+                </div>
             </div>
         </section>
         <section id="contact" class="contact fadeInBounce">
@@ -406,5 +411,13 @@
             <p>&copy; 2025 Vishal Thakur. All rights reserved.</p>
         </div>
     </footer>
+    <script>
+        async function initiateUPIPayment() {
+            const upiId = document.getElementById('upiId').value;
+            const amount = 500; // Example amount
+            const paymentStatus = await handleBuy('product123', 'UPI', { upiId, amount });
+            alert(paymentStatus);
+        }
+    </script>
 </body>
 </html>
