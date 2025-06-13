@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupScrollToTopButton();
     setupLazyLoading();
     setupAutoHideNavBar();
+    setupTestimonials();
 
     const adminLoginForm = document.getElementById("admin-login-form");
     const adminDashboard = document.getElementById("admin-dashboard");
@@ -108,15 +109,13 @@ async function handleBuy(productId, paymentMethod, paymentDetails) {
 }
 
 function setupScrollAnimations() {
-    document.addEventListener('scroll', () => {
-        const elements = document.querySelectorAll('.fadeInBounce');
-        elements.forEach(element => {
-            const position = element.getBoundingClientRect().top;
-            const windowHeight = window.innerHeight;
-            if (position < windowHeight - 100) {
-                element.classList.add('visible');
-            }
-        });
+    const elements = document.querySelectorAll('.fadeInBounce');
+    elements.forEach(element => {
+        const position = element.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+        if (position < windowHeight - 100) {
+            element.classList.add('visible');
+        }
     });
 }
 
@@ -193,4 +192,19 @@ function updateAdminPanel() {
 
     adminPanel.classList.remove("hidden");
     console.log("Admin panel updated.");
+}
+
+function setupTestimonials() {
+    const testimonials = [
+        { text: "Vishal's work on our e-commerce platform was outstanding. Highly recommended!", author: "Client A" },
+        { text: "The portfolio website Vishal created exceeded our expectations.", author: "Client B" }
+    ];
+
+    const testimonialsContainer = document.querySelector('#testimonials .grid');
+    testimonials.forEach(testimonial => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<p>${testimonial.text}</p><h3>- ${testimonial.author}</h3>`;
+        testimonialsContainer.appendChild(card);
+    });
 }

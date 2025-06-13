@@ -26,7 +26,9 @@
 }
 
 .fadeInBounce {
-    animation-name: fadeInBounce;
+    -webkit-animation-name: fadeInBounce;
+    animation-name: fadeInBounce; /* Consolidated for compatibility */
+    -webkit-animation-duration: 1s;
     animation-duration: 1s;
     animation-timing-function: ease-in-out;
 }
