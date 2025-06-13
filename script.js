@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Apply saved theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark-mode') {
+        document.body.classList.add('dark-mode');
+    }
+
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -26,6 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
     themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
+        const currentTheme = document.body.classList.contains('dark-mode') ? 'dark-mode' : 'light-mode';
+        localStorage.setItem('theme', currentTheme);
+    });
+
+    // Handle UPI payment actions
+    const buyButtons = document.querySelectorAll('.buy-now');
+    buyButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const upiLink = button.getAttribute('data-upi');
+            window.location.href = upiLink;
+        });
     });
 });
 
