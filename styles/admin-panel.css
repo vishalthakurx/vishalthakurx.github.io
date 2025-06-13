@@ -269,6 +269,10 @@ nav ul li a {
     margin-top: 0.5rem;
 }
 
+.hidden {
+    display: none !important;
+}
+
 @media (max-width: 900px) {
     .dashboard-cards {
         flex-direction: column;

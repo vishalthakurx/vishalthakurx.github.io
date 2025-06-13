@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
             users[idx].role = fields.role;
             setData('admin_users', users);
             renderUsers();
+            showToast('User updated!');
         });
     };
     window.deleteUser = function(idx) {
@@ -59,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             users.splice(idx, 1);
             setData('admin_users', users);
             renderUsers();
+            showToast('User deleted!');
         }
     };
     addUserBtn.onclick = function() {
@@ -70,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
             users.push({ username: fields.username, role: fields.role });
             setData('admin_users', users);
             renderUsers();
+            showToast('User added!');
         });
     };
 
@@ -100,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
             products[idx].price = parseFloat(fields.price);
             setData('admin_products', products);
             renderProducts();
+            showToast('Product updated!');
         });
     };
     window.deleteProduct = function(idx) {
@@ -108,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             products.splice(idx, 1);
             setData('admin_products', products);
             renderProducts();
+            showToast('Product deleted!');
         }
     };
     addProductBtn.onclick = function() {
@@ -119,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
             products.push({ name: fields.name, price: parseFloat(fields.price) });
             setData('admin_products', products);
             renderProducts();
+            showToast('Product added!');
         });
     };
 
@@ -161,6 +167,29 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('modal-cancel-btn').onclick = function() {
             overlay.classList.add('hidden');
         };
+    }
+
+    // --- Toast Helper ---
+    function showToast(message, isError = false) {
+        let toast = document.getElementById('admin-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'admin-toast';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '30px';
+            toast.style.right = '30px';
+            toast.style.padding = '1rem 2rem';
+            toast.style.background = isError ? '#e74c3c' : '#27ae60';
+            toast.style.color = '#fff';
+            toast.style.borderRadius = '8px';
+            toast.style.fontWeight = 'bold';
+            toast.style.zIndex = '9999';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.style.background = isError ? '#e74c3c' : '#27ae60';
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2500);
     }
 
     // --- Initial Data (for demo) ---

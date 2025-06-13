@@ -23,6 +23,7 @@
             if (f.pattern) input.pattern = f.pattern;
             if (f.min !== undefined) input.min = f.min;
             if (f.value !== undefined) input.value = f.value;
+            input.style = 'padding: 0.5rem; border-radius: 5px; border: 1px solid #ccc; margin-top: 4px;';
             div.appendChild(label);
             div.appendChild(input);
             form.appendChild(div);
