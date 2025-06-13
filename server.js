@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const multer = require('multer');
 
 const app = express();
 const PORT = 3000;
@@ -9,11 +10,15 @@ const PORT = 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
+const upload = multer({ dest: 'uploads/' });
+
 // In-memory database (replace with MongoDB or other DB for production)
 const users = [];
 const products = [];
 const settings = { theme: 'light', notifications: true };
 const analytics = { visits: 0 };
+const messages = [];
+const submissions = [];
 
 // Routes
 app.get('/api/users', (req, res) => {
@@ -89,6 +94,44 @@ app.get('/api/analytics', (req, res) => {
 app.post('/api/analytics/reset', (req, res) => {
     analytics.visits = 0;
     res.json({ message: 'Analytics data reset successfully', analytics });
+});
+
+// Authentication (simple demo, use JWT for production)
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+    const user = users.find(u => u.username === username && u.password === password);
+    if (user) {
+        res.json({ success: true, user: { username: user.username } });
+    } else {
+        res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+});
+
+// Messaging
+app.get('/api/messages', (req, res) => {
+    res.json(messages);
+});
+
+app.post('/api/messages', (req, res) => {
+    const { from, to, text } = req.body;
+    messages.push({ from, to, text, timestamp: new Date().toISOString() });
+    res.json({ success: true });
+});
+
+// File uploads
+app.post('/api/upload', upload.single('file'), (req, res) => {
+    if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
+    res.json({ success: true, filename: req.file.filename, originalname: req.file.originalname });
+});
+
+// Project submissions (requirements)
+app.get('/api/submissions', (req, res) => {
+    res.json(submissions);
+});
+
+app.post('/api/submissions', (req, res) => {
+    submissions.push({ ...req.body, timestamp: new Date().toISOString() });
+    res.json({ success: true });
 });
 
 // Start server
