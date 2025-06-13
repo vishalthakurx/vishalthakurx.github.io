@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vishal Thakur</title>
+    <meta name="description" content="Improved website with enhanced UI and information">
+    <meta name="keywords" content="UI, Information, Vishal Thakur, Portfolio">
     <link rel="stylesheet" href="style.css">
+    <script src="store.js" defer></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
     <header id="header" class="fadeInBounce">
@@ -20,6 +24,7 @@
                     <li><a href="#interests">Interests</a></li>
                     <li><a href="#projects">Projects</a></li>
                     <li><a href="#contact">Contact</a></li>
+                    <li><a href="#store">Services</a></li>
                 </ul>
             </nav>
         </div>
@@ -28,7 +33,8 @@
         <section id="about" class="about fadeInBounce">
             <div class="container">
                 <h2>About Me</h2>
-                <p>I am Vishal Thakur, a software developer looking to work in an environment that encourages growth and success.</p>
+                <p>Welcome to my portfolio! I am Vishal Thakur, a passionate developer with expertise in web technologies.</p>
+                <img src="graphics/about.svg" alt="About Me Graphic" class="graphic">
             </div>
         </section>
         <section id="resume" class="resume fadeInBounce">
@@ -65,18 +71,50 @@
         <section id="projects" class="projects fadeInBounce">
             <div class="container">
                 <h2>Projects</h2>
-                <ul>
-                    <li><a href="https://github.com/vishalthakurx/project1">Project 1</a> - Description of project 1.</li>
-                    <li><a href="https://github.com/vishalthakurx/project2">Project 2</a> - Description of project 2.</li>
-                </ul>
+                <div class="project">
+                    <h3>Project 1</h3>
+                    <p>A brief description of Project 1.</p>
+                    <img src="graphics/project1.svg" alt="Project 1 Graphic" class="graphic">
+                </div>
+                <div class="project">
+                    <h3>Project 2</h3>
+                    <p>A brief description of Project 2.</p>
+                    <img src="graphics/project2.svg" alt="Project 2 Graphic" class="graphic">
+                </div>
             </div>
         </section>
         <section id="contact" class="contact fadeInBounce">
             <div class="container">
-                <h2>Contact</h2>
-                <p>Email: <a href="mailto:vishalthakur@example.com">vishalthakur@example.com</a></p>
-                <p>LinkedIn: <a href="https://www.linkedin.com/in/vishalthakur9">linkedin.com/in/vishalthakur9</a></p>
-                <p>GitHub: <a href="https://github.com/vishalthakur301999">github.com/vishalthakur301999</a></p>
+                <h2>Contact Me</h2>
+                <form>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" required></textarea>
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+        </section>
+        <section id="store" class="store fadeInBounce">
+            <div class="container">
+                <h2>Services</h2>
+                <div class="service">
+                    <h3>Basic Website Development</h3>
+                    <p>Starting at ₹10,000</p>
+                    <button class="buy-now" data-service="Basic Website Development">Buy Now</button>
+                </div>
+                <div class="service">
+                    <h3>Advanced Website Development</h3>
+                    <p>Starting at ₹25,000</p>
+                    <button class="buy-now" data-service="Advanced Website Development">Buy Now</button>
+                </div>
+                <div class="service">
+                    <h3>Custom Software Development</h3>
+                    <p>Starting at ₹50,000</p>
+                    <button class="buy-now" data-service="Custom Software Development">Buy Now</button>
+                </div>
             </div>
         </section>
     </main>
