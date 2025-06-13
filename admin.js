@@ -338,7 +338,7 @@ function showToast(message, isError = false) {
 }
 
 // --- Admin Token Check ---
-const ADMIN_TOKEN = 'YOUR_SECRET_TOKEN';
+const ADMIN_TOKEN = 'cobra';
 function isAdmin() {
     const params = new URLSearchParams(window.location.search);
     return params.get('admin') === ADMIN_TOKEN;
