@@ -1,12 +1,11 @@
 <script>
-// --- Admin Token Check ---
-const ADMIN_TOKEN = 'YOUR_SECRET_TOKEN'; // Set your secret token here
-function isAdminTokenValid() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('admin') === ADMIN_TOKEN;
-}
-// Hide dashboard and login if token is invalid
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Admin Token Check ---
+    const ADMIN_TOKEN = 'YOUR_SECRET_TOKEN'; // Set your secret token here
+    function isAdminTokenValid() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('admin') === ADMIN_TOKEN;
+    }
     if (!isAdminTokenValid()) {
         document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100vh;"><h2>Access Denied: Invalid Admin Token</h2></div>';
         return;
@@ -15,202 +14,210 @@ window.addEventListener('DOMContentLoaded', () => {
     // --- User Management ---
     const addUserBtn = document.getElementById('add-user-btn');
     const userList = document.getElementById('user-list');
-    let users = JSON.parse(localStorage.getItem('admin_users') || '[]');
+    if (addUserBtn && userList) {
+        let users = JSON.parse(localStorage.getItem('admin_users') || '[]');
 
-    addUserBtn.addEventListener('click', function() {
-        openUserModal();
-    });
-
-    function openUserModal(user = null, idx = null) {
-        modalTitle.textContent = user ? 'Edit User' : 'Add User';
-        modalForm.innerHTML = `
-            <div class="form-group">
-                <label for="user-username">Username</label>
-                <input type="text" id="user-username" required pattern="^[a-zA-Z0-9_]{4,16}$" value="${user ? user.username : ''}">
-            </div>
-            <div class="form-group">
-                <label for="user-role">Role</label>
-                <select id="user-role">
-                    <option value="admin"${user && user.role === 'admin' ? ' selected' : ''}>Admin</option>
-                    <option value="editor"${user && user.role === 'editor' ? ' selected' : ''}>Editor</option>
-                    <option value="viewer"${user && user.role === 'viewer' ? ' selected' : ''}>Viewer</option>
-                </select>
-            </div>
-        `;
-        modalOverlay.classList.remove('hidden');
-        modalSaveBtn.onclick = function(e) {
-            e.preventDefault();
-            const username = document.getElementById('user-username').value.trim();
-            const role = document.getElementById('user-role').value;
-            if (!username) {
-                showToast('Please enter a username.');
-                return;
-            }
-            if (user) {
-                users[idx] = { username, role };
-            } else {
-                users.push({ username, role });
-            }
-            localStorage.setItem('admin_users', JSON.stringify(users));
-            renderUserList();
-            closeModal();
-            showToast(user ? 'User updated.' : 'User added.');
-        };
-    }
-
-    function renderUserList() {
-        userList.innerHTML = '';
-        users.forEach((user, idx) => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                ${user.username} <span style="color:#888;">(${user.role})</span>
-                <button class="btn-secondary" style="margin-left:8px;" onclick="editUser(${idx})"><i class="fa fa-edit"></i></button>
-                <button class="btn-danger" style="margin-left:4px;" onclick="deleteUser(${idx})"><i class="fa fa-trash"></i></button>
-            `;
-            userList.appendChild(li);
+        addUserBtn.addEventListener('click', function() {
+            openUserModal();
         });
-        document.getElementById('dashboard-total-users').textContent = users.length;
-    }
-    window.editUser = function(idx) {
-        openUserModal(users[idx], idx);
-    };
-    window.deleteUser = function(idx) {
-        if (confirm('Delete this user?')) {
-            users.splice(idx, 1);
-            localStorage.setItem('admin_users', JSON.stringify(users));
-            renderUserList();
-            showToast('User deleted.');
+
+        function openUserModal(user = null, idx = null) {
+            modalTitle.textContent = user ? 'Edit User' : 'Add User';
+            modalForm.innerHTML = `
+                <div class="form-group">
+                    <label for="user-username">Username</label>
+                    <input type="text" id="user-username" required pattern="^[a-zA-Z0-9_]{4,16}$" value="${user ? user.username : ''}">
+                </div>
+                <div class="form-group">
+                    <label for="user-role">Role</label>
+                    <select id="user-role">
+                        <option value="admin"${user && user.role === 'admin' ? ' selected' : ''}>Admin</option>
+                        <option value="editor"${user && user.role === 'editor' ? ' selected' : ''}>Editor</option>
+                        <option value="viewer"${user && user.role === 'viewer' ? ' selected' : ''}>Viewer</option>
+                    </select>
+                </div>
+            `;
+            modalOverlay.classList.remove('hidden');
+            modalSaveBtn.onclick = function(e) {
+                e.preventDefault();
+                const username = document.getElementById('user-username').value.trim();
+                const role = document.getElementById('user-role').value;
+                if (!username) {
+                    showToast('Please enter a username.');
+                    return;
+                }
+                if (user) {
+                    users[idx] = { username, role };
+                } else {
+                    users.push({ username, role });
+                }
+                localStorage.setItem('admin_users', JSON.stringify(users));
+                renderUserList();
+                closeModal();
+                showToast(user ? 'User updated.' : 'User added.');
+            };
         }
-    };
-    window.addEventListener('DOMContentLoaded', renderUserList);
+
+        function renderUserList() {
+            userList.innerHTML = '';
+            users.forEach((user, idx) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${user.username} <span style="color:#888;">(${user.role})</span>
+                    <button class="btn-secondary" style="margin-left:8px;" onclick="editUser(${idx})"><i class="fa fa-edit"></i></button>
+                    <button class="btn-danger" style="margin-left:4px;" onclick="deleteUser(${idx})"><i class="fa fa-trash"></i></button>
+                `;
+                userList.appendChild(li);
+            });
+            const totalUsers = document.getElementById('dashboard-total-users');
+            if (totalUsers) totalUsers.textContent = users.length;
+        }
+        window.editUser = function(idx) {
+            openUserModal(users[idx], idx);
+        };
+        window.deleteUser = function(idx) {
+            if (confirm('Delete this user?')) {
+                users.splice(idx, 1);
+                localStorage.setItem('admin_users', JSON.stringify(users));
+                renderUserList();
+                showToast('User deleted.');
+            }
+        };
+        renderUserList();
+    }
 
     // --- Product Edit/Delete ---
-    function renderProductList() {
-        productList.innerHTML = '';
-        products.forEach((product, idx) => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                ${product.name} - ₹${product.price}
-                <button class="btn-secondary" style="margin-left:8px;" onclick="editProduct(${idx})"><i class="fa fa-edit"></i></button>
-                <button class="btn-danger" style="margin-left:4px;" onclick="deleteProduct(${idx})"><i class="fa fa-trash"></i></button>
-            `;
-            productList.appendChild(li);
-        });
-        document.getElementById('dashboard-total-products').textContent = products.length;
-        localStorage.setItem('admin_products', JSON.stringify(products));
-    }
-    window.editProduct = function(idx) {
-        openProductModal(products[idx], idx);
-    };
-    window.deleteProduct = function(idx) {
-        if (confirm('Delete this product?')) {
-            products.splice(idx, 1);
-            renderProductList();
-            showToast('Product deleted.');
-        }
-    };
-    // Load products from localStorage
-    products = JSON.parse(localStorage.getItem('admin_products') || '[]');
-    window.addEventListener('DOMContentLoaded', renderProductList);
+    const productList = document.getElementById('product-list');
+    if (productList) {
+        let products = JSON.parse(localStorage.getItem('admin_products') || '[]');
 
-    // Update openProductModal to support editing
-    function openProductModal(product = null, idx = null) {
-        modalTitle.textContent = product ? 'Edit Product' : 'Add Product';
-        modalForm.innerHTML = `
-            <div class="form-group">
-                <label for="product-name">Name</label>
-                <input type="text" id="product-name" required value="${product ? product.name : ''}">
-            </div>
-            <div class="form-group">
-                <label for="product-price">Price</label>
-                <input type="number" id="product-price" required min="0" value="${product ? product.price : ''}">
-            </div>
-        `;
-        modalOverlay.classList.remove('hidden');
-        modalSaveBtn.onclick = function(e) {
-            e.preventDefault();
-            const name = document.getElementById('product-name').value.trim();
-            const price = parseFloat(document.getElementById('product-price').value);
-            if (!name || isNaN(price)) {
-                showToast('Please enter valid product details.');
-                return;
-            }
-            if (product && idx !== null) {
-                products[idx] = { name, price };
-            } else {
-                products.push({ name, price });
-            }
-            renderProductList();
-            closeModal();
-            showToast(product ? 'Product updated.' : 'Product added.');
+        function renderProductList() {
+            productList.innerHTML = '';
+            products.forEach((product, idx) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${product.name} - ₹${product.price}
+                    <button class="btn-secondary" style="margin-left:8px;" onclick="editProduct(${idx})"><i class="fa fa-edit"></i></button>
+                    <button class="btn-danger" style="margin-left:4px;" onclick="deleteProduct(${idx})"><i class="fa fa-trash"></i></button>
+                `;
+                productList.appendChild(li);
+            });
+            const totalProducts = document.getElementById('dashboard-total-products');
+            if (totalProducts) totalProducts.textContent = products.length;
+            localStorage.setItem('admin_products', JSON.stringify(products));
+        }
+        window.editProduct = function(idx) {
+            openProductModal(products[idx], idx);
         };
+        window.deleteProduct = function(idx) {
+            if (confirm('Delete this product?')) {
+                products.splice(idx, 1);
+                renderProductList();
+                showToast('Product deleted.');
+            }
+        };
+        renderProductList();
+
+        function openProductModal(product = null, idx = null) {
+            modalTitle.textContent = product ? 'Edit Product' : 'Add Product';
+            modalForm.innerHTML = `
+                <div class="form-group">
+                    <label for="product-name">Name</label>
+                    <input type="text" id="product-name" required value="${product ? product.name : ''}">
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Price</label>
+                    <input type="number" id="product-price" required min="0" value="${product ? product.price : ''}">
+                </div>
+            `;
+            modalOverlay.classList.remove('hidden');
+            modalSaveBtn.onclick = function(e) {
+                e.preventDefault();
+                const name = document.getElementById('product-name').value.trim();
+                const price = parseFloat(document.getElementById('product-price').value);
+                if (!name || isNaN(price)) {
+                    showToast('Please enter valid product details.');
+                    return;
+                }
+                if (product && idx !== null) {
+                    products[idx] = { name, price };
+                } else {
+                    products.push({ name, price });
+                }
+                renderProductList();
+                closeModal();
+                showToast(product ? 'Product updated.' : 'Product added.');
+            };
+        }
     }
 
     // --- Service Management ---
     const addServiceBtn = document.getElementById('add-service-btn');
     const serviceList = document.getElementById('service-list');
-    let services = JSON.parse(localStorage.getItem('admin_services') || '[]');
+    if (addServiceBtn && serviceList) {
+        let services = JSON.parse(localStorage.getItem('admin_services') || '[]');
 
-    addServiceBtn.addEventListener('click', function() {
-        openServiceModal();
-    });
-
-    function openServiceModal(service = null, idx = null) {
-        modalTitle.textContent = service ? 'Edit Service' : 'Add Service';
-        modalForm.innerHTML = `
-            <div class="form-group">
-                <label for="service-name">Name</label>
-                <input type="text" id="service-name" required value="${service ? service.name : ''}">
-            </div>
-            <div class="form-group">
-                <label for="service-desc">Description</label>
-                <input type="text" id="service-desc" required value="${service ? service.desc : ''}">
-            </div>
-        `;
-        modalOverlay.classList.remove('hidden');
-        modalSaveBtn.onclick = function(e) {
-            e.preventDefault();
-            const name = document.getElementById('service-name').value.trim();
-            const desc = document.getElementById('service-desc').value.trim();
-            if (!name || !desc) {
-                showToast('Please enter valid service details.');
-                return;
-            }
-            if (service && idx !== null) {
-                services[idx] = { name, desc };
-            } else {
-                services.push({ name, desc });
-            }
-            localStorage.setItem('admin_services', JSON.stringify(services));
-            renderServiceList();
-            closeModal();
-            showToast(service ? 'Service updated.' : 'Service added.');
-        };
-    }
-
-    function renderServiceList() {
-        serviceList.innerHTML = '';
-        services.forEach((service, idx) => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                ${service.name} - <span style="color:#888;">${service.desc}</span>
-                <button class="btn-secondary" style="margin-left:8px;" onclick="editService(${idx})"><i class="fa fa-edit"></i></button>
-                <button class="btn-danger" style="margin-left:4px;" onclick="deleteService(${idx})"><i class="fa fa-trash"></i></button>
-            `;
-            serviceList.appendChild(li);
+        addServiceBtn.addEventListener('click', function() {
+            openServiceModal();
         });
-    }
-    window.editService = function(idx) {
-        openServiceModal(services[idx], idx);
-    };
-    window.deleteService = function(idx) {
-        if (confirm('Delete this service?')) {
-            services.splice(idx, 1);
-            localStorage.setItem('admin_services', JSON.stringify(services));
-            renderServiceList();
-            showToast('Service deleted.');
+
+        function openServiceModal(service = null, idx = null) {
+            modalTitle.textContent = service ? 'Edit Service' : 'Add Service';
+            modalForm.innerHTML = `
+                <div class="form-group">
+                    <label for="service-name">Name</label>
+                    <input type="text" id="service-name" required value="${service ? service.name : ''}">
+                </div>
+                <div class="form-group">
+                    <label for="service-desc">Description</label>
+                    <input type="text" id="service-desc" required value="${service ? service.desc : ''}">
+                </div>
+            `;
+            modalOverlay.classList.remove('hidden');
+            modalSaveBtn.onclick = function(e) {
+                e.preventDefault();
+                const name = document.getElementById('service-name').value.trim();
+                const desc = document.getElementById('service-desc').value.trim();
+                if (!name || !desc) {
+                    showToast('Please enter valid service details.');
+                    return;
+                }
+                if (service && idx !== null) {
+                    services[idx] = { name, desc };
+                } else {
+                    services.push({ name, desc });
+                }
+                localStorage.setItem('admin_services', JSON.stringify(services));
+                renderServiceList();
+                closeModal();
+                showToast(service ? 'Service updated.' : 'Service added.');
+            };
         }
-    };
-    window.addEventListener('DOMContentLoaded', renderServiceList);
+
+        function renderServiceList() {
+            serviceList.innerHTML = '';
+            services.forEach((service, idx) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${service.name} - <span style="color:#888;">${service.desc}</span>
+                    <button class="btn-secondary" style="margin-left:8px;" onclick="editService(${idx})"><i class="fa fa-edit"></i></button>
+                    <button class="btn-danger" style="margin-left:4px;" onclick="deleteService(${idx})"><i class="fa fa-trash"></i></button>
+                `;
+                serviceList.appendChild(li);
+            });
+        }
+        window.editService = function(idx) {
+            openServiceModal(services[idx], idx);
+        };
+        window.deleteService = function(idx) {
+            if (confirm('Delete this service?')) {
+                services.splice(idx, 1);
+                localStorage.setItem('admin_services', JSON.stringify(services));
+                renderServiceList();
+                showToast('Service deleted.');
+            }
+        };
+        renderServiceList();
+    }
 });
 </script>
