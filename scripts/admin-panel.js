@@ -65,395 +65,120 @@ document.addEventListener('DOMContentLoaded', () => {
         showModal('Add User', [
             { label: 'Username', id: 'username', type: 'text', required: true },
             { label: 'Role', id: 'role', type: 'text', required: true }
-        localStorage.setItem('admin-roles', JSON.stringify(roles));
-    }
-
-    // Helper for passwords (for demo, not secure)
-    function getPasswords() {
-        return JSON.parse(localStorage.getItem('admin-passwords') || '{"Alice":"alice123","Bob":"bob123"}');
-    }
-    function setPasswords(passwords) {
-        localStorage.setItem('admin-passwords', JSON.stringify(passwords));
-    }
-
-    // Render functions
-    function renderUsers() {
-        userList.innerHTML = '';
-        const users = getUsers();
-        const roles = getRoles();
-        users.forEach((user, idx) => {
-            const li = document.createElement('li');
-            li.textContent = user + ' (' + (roles[user] || 'user') + ')';
-            // Edit button
-            const edit = document.createElement('button');
-            edit.textContent = 'Edit';
-            edit.className = 'btn-secondary';
-            edit.onclick = () => {
-                window.showAdminModal('Edit User', [
-                    { label: 'Username', id: 'modal-username', type: 'text', required: true, value: user, pattern: '^[a-zA-Z0-9_]{4,16}$' },
-                    { label: 'Role', id: 'modal-role', type: 'text', required: true, value: roles[user] || 'user' }
-                ], function(formData) {
-                    const usersArr = getUsers();
-                    usersArr[idx] = formData['modal-username'];
-                    setUsers(usersArr);
-                    const rolesObj = getRoles();
-                    delete rolesObj[user];
-                    rolesObj[formData['modal-username']] = formData['modal-role'];
-                    setRoles(rolesObj);
-                    renderUsers();
-                    updateDashboard();
-                });
-            };
-            // Reset password button
-            const resetPwd = document.createElement('button');
-            resetPwd.textContent = 'Reset Password';
-            resetPwd.className = 'btn-secondary';
-            resetPwd.onclick = () => {
-                window.showAdminModal('Reset Password', [
-                    { label: 'New Password', id: 'modal-password', type: 'password', required: true }
-                ], function(formData) {
-                    const passwords = getPasswords();
-                    passwords[user] = formData['modal-password'];
-                    setPasswords(passwords);
-                    alert('Password reset for ' + user);
-                });
-            };
-            // Delete button
-            const del = document.createElement('button');
-            del.textContent = 'Delete';
-            del.className = 'btn-danger';
-            del.onclick = () => {
-                const usersArr = getUsers();
-                usersArr.splice(idx, 1);
-                setUsers(usersArr);
-                const rolesObj = getRoles();
-                delete rolesObj[user];
-                setRoles(rolesObj);
-                renderUsers();
-                updateDashboard();
-            };
-            li.appendChild(edit);
-            li.appendChild(resetPwd);
-            li.appendChild(del);
-            userList.appendChild(li);
+        ], (fields) => {
+            const users = getData('admin_users');
+            users.push({ username: fields.username, role: fields.role });
+            setData('admin_users', users);
+            renderUsers();
         });
-    }
+    };
 
+    // --- Product Management ---
     function renderProducts() {
+        const products = getData('admin_products');
         productList.innerHTML = '';
-        getProducts().forEach((prod, idx) => {
+        products.forEach((product, idx) => {
             const li = document.createElement('li');
-            li.textContent = prod;
-            // Edit button
-            const edit = document.createElement('button');
-            edit.textContent = 'Edit';
-            edit.className = 'btn-secondary';
-            edit.onclick = () => {
-                window.showAdminModal('Edit Product', [
-                    { label: 'Product Name', id: 'modal-product-name', type: 'text', required: true, value: prod }
-                ], function(formData) {
-                    const products = getProducts();
-                    products[idx] = formData['modal-product-name'];
-                    setProducts(products);
-                    renderProducts();
-                    updateDashboard();
-                });
-            };
-            // Delete button
-            const del = document.createElement('button');
-            del.textContent = 'Delete';
-            del.className = 'btn-danger';
-            del.onclick = () => {
-                const products = getProducts();
-                products.splice(idx, 1);
-                setProducts(products);
-                renderProducts();
-                updateDashboard();
-            };
-            li.appendChild(edit);
-            li.appendChild(del);
+            li.innerHTML = `
+                <span><b>${product.name}</b> ($${product.price})</span>
+                <span>
+                    <button onclick="editProduct(${idx})"><i class="fa fa-edit"></i></button>
+                    <button onclick="deleteProduct(${idx})"><i class="fa fa-trash"></i></button>
+                </span>
+            `;
             productList.appendChild(li);
         });
+        updateDashboard();
     }
-
-    function updateDashboard() {
-        totalUsers.textContent = getUsers().length;
-        totalProducts.textContent = getProducts().length;
-        // Simulate active sessions as random between 1 and 10
-        if (totalSessions) totalSessions.textContent = Math.floor(Math.random() * 10) + 1;
-    }
-
-    // Analytics
-    let analyticsChart;
-    function renderAnalytics() {
-        const data = getAnalytics();
-        if (analyticsChart) analyticsChart.destroy();
-        analyticsChart = new Chart(analyticsChartCanvas, {
-            type: 'line',
-            data: {
-                labels: data.labels,
-                datasets: [
-                    {
-                        label: 'Users',
-                        data: data.users,
-                        borderColor: '#232946',
-                        backgroundColor: 'rgba(35,41,70,0.1)',
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Products',
-                        data: data.products,
-                        borderColor: '#eebbc3',
-                        backgroundColor: 'rgba(238,187,195,0.1)',
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Sessions',
-                        data: data.sessions,
-                        borderColor: '#ff4b5c',
-                        backgroundColor: 'rgba(255,75,92,0.1)',
-                        tension: 0.4
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: true, position: 'top' },
-                    title: { display: false }
-                },
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
-    }
-    function refreshAnalytics() {
-        // Simulate new analytics data
-        const data = getAnalytics();
-        data.users = data.users.map(() => Math.floor(Math.random() * 15) + 1);
-        data.products = data.products.map(() => Math.floor(Math.random() * 7) + 1);
-        data.sessions = data.sessions.map(() => Math.floor(Math.random() * 10) + 1);
-        setAnalytics(data);
-        renderAnalytics();
-    }
-    function resetAnalytics() {
-        setAnalytics({
-            labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-            users: [0, 0, 0, 0, 0, 0, 0],
-            products: [0, 0, 0, 0, 0, 0, 0],
-            sessions: [0, 0, 0, 0, 0, 0, 0]
-        });
-        renderAnalytics();
-    }
-
-    // Settings
-    function loadSettings() {
-        const settings = getSettings();
-        themeSelect.value = settings.theme;
-        notificationsToggle.checked = settings.notifications;
-        document.body.classList.remove('theme-light', 'theme-dark');
-        document.body.classList.add('theme-' + settings.theme);
-    }
-    settingsForm && settingsForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const theme = themeSelect.value;
-        const notifications = notificationsToggle.checked;
-        setSettings({ theme, notifications });
-        loadSettings();
-        alert('Settings saved!');
-    });
-
-    // Login logic
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const username = document.getElementById('admin-username').value;
-        const password = document.getElementById('admin-password').value;
-        if (
-            (username === ADMIN_USER && password === ADMIN_PASS) ||
-            (username === SUPER_ADMIN_USER && password === SUPER_ADMIN_PASS)
-        ) {
-            isSuperAdmin = (username === SUPER_ADMIN_USER);
-            loginSection.classList.add('hidden');
-            dashboardSection.classList.remove('hidden');
-            renderUsers();
+    window.editProduct = function(idx) {
+        showModal('Edit Product', [
+            { label: 'Name', id: 'name', type: 'text', value: getData('admin_products')[idx].name, required: true },
+            { label: 'Price', id: 'price', type: 'number', value: getData('admin_products')[idx].price, required: true }
+        ], (fields) => {
+            const products = getData('admin_products');
+            products[idx].name = fields.name;
+            products[idx].price = parseFloat(fields.price);
+            setData('admin_products', products);
             renderProducts();
-            updateDashboard();
-            renderAnalytics();
-            loadSettings();
-            // Show super admin badge if logged in as super admin
-            if (isSuperAdmin) {
-                let badge = document.getElementById('super-admin-badge');
-                if (!badge) {
-                    badge = document.createElement('div');
-                    badge.id = 'super-admin-badge';
-                    badge.textContent = 'Super Admin';
-                    badge.style = 'background:#ff4b5c;color:#fff;padding:6px 16px;border-radius:20px;display:inline-block;margin:10px 0;font-weight:bold;';
-                    dashboardSection.prepend(badge);
-                }
-            } else {
-                const badge = document.getElementById('super-admin-badge');
-                if (badge) badge.remove();
-            }
-        } else {
-            alert('Invalid credentials');
-        }
-    });
-
-    // Password visibility toggle
-    document.getElementById('toggle-password').addEventListener('click', function() {
-        const pwd = document.getElementById('admin-password');
-        const icon = document.getElementById('toggle-password-icon');
-        if (pwd.type === 'password') {
-            pwd.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            pwd.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
-    });
-
-    // Username validation feedback
-    document.getElementById('admin-username').addEventListener('input', function(e) {
-        const input = e.target;
-        const help = document.getElementById('username-help');
-        if (!input.validity.valid) {
-            help.style.color = 'red';
-        } else {
-            help.style.color = '';
-        }
-    });
-
-    // Logout
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            dashboardSection.classList.add('hidden');
-            loginSection.classList.remove('hidden');
-            loginForm.reset();
         });
+    };
+    window.deleteProduct = function(idx) {
+        if (confirm('Delete this product?')) {
+            const products = getData('admin_products');
+            products.splice(idx, 1);
+            setData('admin_products', products);
+            renderProducts();
+        }
+    };
+    addProductBtn.onclick = function() {
+        showModal('Add Product', [
+            { label: 'Name', id: 'name', type: 'text', required: true },
+            { label: 'Price', id: 'price', type: 'number', required: true }
+        ], (fields) => {
+            const products = getData('admin_products');
+            products.push({ name: fields.name, price: parseFloat(fields.price) });
+            setData('admin_products', products);
+            renderProducts();
+        });
+    };
+
+    // --- Dashboard Stats ---
+    function updateDashboard() {
+        totalUsers.textContent = getData('admin_users').length;
+        totalProducts.textContent = getData('admin_products').length;
+        totalSessions.textContent = 1; // Only admin session for demo
     }
 
-    // User CRUD
-    if (addUserBtn) {
-        addUserBtn.addEventListener('click', function() {
-            window.showAdminModal('Add User', [
-                { label: 'Username', id: 'modal-username', type: 'text', required: true, pattern: '^[a-zA-Z0-9_]{4,16}$' },
-                { label: 'Role', id: 'modal-role', type: 'text', required: true, value: 'user' },
-                { label: 'Password', id: 'modal-password', type: 'password', required: true }
-            ], function(formData) {
-                const users = getUsers();
-                users.push(formData['modal-username']);
-                setUsers(users);
-                const roles = getRoles();
-                roles[formData['modal-username']] = formData['modal-role'];
-                setRoles(roles);
-                const passwords = getPasswords();
-                passwords[formData['modal-username']] = formData['modal-password'];
-                setPasswords(passwords);
-                renderUsers();
-                updateDashboard();
+    // --- Modal Helper ---
+    function showModal(title, fields, onSave) {
+        const overlay = document.getElementById('modal-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalForm = document.getElementById('modal-form');
+        modalTitle.textContent = title;
+        modalForm.innerHTML = '';
+        fields.forEach(field => {
+            const div = document.createElement('div');
+            div.className = 'form-group';
+            div.innerHTML = `
+                <label for="modal-${field.id}">${field.label}</label>
+                <input type="${field.type}" id="modal-${field.id}" ${field.required ? 'required' : ''} value="${field.value || ''}">
+            `;
+            modalForm.appendChild(div);
+        });
+        overlay.classList.remove('hidden');
+        document.getElementById('modal-save-btn').onclick = function() {
+            const values = {};
+            let valid = true;
+            fields.forEach(field => {
+                const val = modalForm.querySelector(`#modal-${field.id}`).value;
+                if (field.required && !val) valid = false;
+                values[field.id] = val;
             });
-        });
-    }
-
-    // Product CRUD
-    if (addProductBtn) {
-        addProductBtn.addEventListener('click', function() {
-            window.showAdminModal('Add Product', [
-                { label: 'Product Name', id: 'modal-product-name', type: 'text', required: true }
-            ], function(formData) {
-                const products = getProducts();
-                products.push(formData['modal-product-name']);
-                setProducts(products);
-                renderProducts();
-                updateDashboard();
-            });
-        });
-    }
-
-    // Analytics controls
-    if (refreshAnalyticsBtn) {
-        refreshAnalyticsBtn.addEventListener('click', () => {
-            refreshAnalytics();
-        });
-    }
-    if (resetAnalyticsBtn) {
-        resetAnalyticsBtn.addEventListener('click', () => {
-            if (confirm('Reset all analytics data?')) {
-                resetAnalytics();
-            }
-        });
-    }
-
-    // Export/Import Data
-    function exportData() {
-        const data = {
-            users: getUsers(),
-            roles: getRoles(),
-            passwords: getPasswords(),
-            products: getProducts(),
-            analytics: getAnalytics(),
-            settings: getSettings()
+            if (!valid) return;
+            overlay.classList.add('hidden');
+            onSave(values);
         };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'admin-data-export.json';
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-    function importData(file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const data = JSON.parse(e.target.result);
-                if (data.users) setUsers(data.users);
-                if (data.roles) setRoles(data.roles);
-                if (data.passwords) setPasswords(data.passwords);
-                if (data.products) setProducts(data.products);
-                if (data.analytics) setAnalytics(data.analytics);
-                if (data.settings) setSettings(data.settings);
-                renderUsers();
-                renderProducts();
-                updateDashboard();
-                renderAnalytics();
-                loadSettings();
-                alert('Import successful!');
-            } catch (err) {
-                alert('Import failed: ' + err.message);
-            }
+        document.getElementById('modal-cancel-btn').onclick = function() {
+            overlay.classList.add('hidden');
         };
-        reader.readAsText(file);
     }
 
-    // Add export/import buttons to settings section
-    if (settingsForm) {
-        const exportBtn = document.createElement('button');
-        exportBtn.type = 'button';
-        exportBtn.className = 'btn-secondary';
-        exportBtn.textContent = 'Export Data';
-        exportBtn.onclick = exportData;
-        settingsForm.appendChild(exportBtn);
-
-        const importInput = document.createElement('input');
-        importInput.type = 'file';
-        importInput.accept = '.json';
-        importInput.style.display = 'none';
-        importInput.onchange = function(e) {
-            if (e.target.files[0]) importData(e.target.files[0]);
-        };
-        const importBtn = document.createElement('button');
-        importBtn.type = 'button';
-        importBtn.className = 'btn-secondary';
-        importBtn.textContent = 'Import Data';
-        importBtn.onclick = () => importInput.click();
-        settingsForm.appendChild(importBtn);
-        settingsForm.appendChild(importInput);
+    // --- Initial Data (for demo) ---
+    if (!localStorage.getItem('admin_users')) {
+        setData('admin_users', [
+            { username: 'cobra', role: 'admin' },
+            { username: 'alice', role: 'editor' }
+        ]);
+    }
+    if (!localStorage.getItem('admin_products')) {
+        setData('admin_products', [
+            { name: 'Product A', price: 19.99 },
+            { name: 'Product B', price: 29.99 }
+        ]);
     }
 
-    // On load, apply theme if already set
-    loadSettings();
+    // --- Initial Render ---
+    if (userList) renderUsers();
+    if (productList) renderProducts();
+    updateDashboard();
 });
