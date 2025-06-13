@@ -164,17 +164,21 @@
         const togglePasswordIcon = document.getElementById('toggle-password-icon');
         const logoutBtn = document.getElementById('logout-btn');
 
-        // Ensure correct initial visibility
-        function showLogin() {
+        // Always start with login visible, dashboard hidden
+        window.addEventListener('DOMContentLoaded', () => {
             loginSection.classList.remove('hidden');
             dashboardSection.classList.add('hidden');
-        }
-        function showDashboard() {
-            loginSection.classList.add('hidden');
-            dashboardSection.classList.remove('hidden');
-        }
-        // On page load, always show login and hide dashboard
-        showLogin();
+        });
+
+        // Prevent navigation to dashboard before login
+        document.querySelectorAll('.sidebar nav ul li a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (dashboardSection.classList.contains('hidden') && this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    showToast('Please login first.');
+                }
+            });
+        });
 
         // Toggle password visibility
         togglePasswordBtn.addEventListener('click', function() {
@@ -195,18 +199,23 @@
             const username = document.getElementById('admin-username').value.trim();
             const password = passwordInput.value;
             if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-                showDashboard();
+                loginSection.classList.add('hidden');
+                dashboardSection.classList.remove('hidden');
                 showToast('Login successful!');
+                // Optionally, clear password field
+                passwordInput.value = '';
             } else {
-                alert('Invalid username or password.');
+                showToast('Invalid username or password.');
             }
         });
 
         // Handle logout
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function() {
-                showLogin();
+                dashboardSection.classList.add('hidden');
+                loginSection.classList.remove('hidden');
                 loginForm.reset();
+                passwordInput.value = '';
                 showToast('Logged out.');
             });
         }
@@ -217,7 +226,7 @@
             toast.style.display = 'block';
             setTimeout(() => {
                 toast.style.display = 'none';
-            }, 3000);
+            }, 2000);
         }
     </script>
     <script>
