@@ -114,6 +114,22 @@
                     </form>
                     <button id="logout-btn" class="btn-danger" style="margin-top:20px;"><i class="fa fa-sign-out-alt"></i> Logout</button>
                 </section>
+                <section id="view-logs-section">
+                    <h2>View Logs</h2>
+                    <button onclick="refreshLogs()">Refresh Logs</button>
+                    <button onclick="clearLogs()">Clear Logs</button>
+                    <table id="view-logs-table" border="1">
+                        <thead>
+                            <tr>
+                                <th>Label</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Logs will be inserted here -->
+                        </tbody>
+                    </table>
+                </section>
             </section>
         </main>
     </div>
@@ -132,5 +148,27 @@
     </div>
     <script src="scripts/admin-panel.js"></script>
     <script src="scripts/admin-modal.js"></script>
+    <script src="viewLogger.js"></script>
+    <script>
+        function renderLogs() {
+            const logs = window.viewLogger.getViewLogs();
+            const tbody = document.getElementById('view-logs-table').querySelector('tbody');
+            tbody.innerHTML = '';
+            logs.forEach(log => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${log.label}</td><td>${log.timestamp}</td>`;
+                tbody.appendChild(row);
+            });
+        }
+        function refreshLogs() {
+            renderLogs();
+        }
+        function clearLogs() {
+            window.viewLogger.clearViewLogs();
+            renderLogs();
+        }
+        // Initial render
+        renderLogs();
+    </script>
 </body>
 </html>

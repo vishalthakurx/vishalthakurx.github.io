@@ -31,11 +31,27 @@
                 <h2>Dashboard</h2>
                 <div class="card">
                     <h3>System Performance</h3>
-                    <p>Placeholder for performance metrics.</p>
+                    <ul>
+                        <li>Total Users: <span id="dashboard-total-users">0</span></li>
+                        <li>Total Products: <span id="dashboard-total-products">0</span></li>
+                        <li>Active Sessions: <span id="dashboard-active-sessions">0</span></li>
+                    </ul>
                 </div>
                 <div class="card">
                     <h3>Recent Activities</h3>
-                    <p>Placeholder for activity logs.</p>
+                    <table id="view-logs-table" border="1">
+                        <thead>
+                            <tr>
+                                <th>Label</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Logs will be inserted here -->
+                        </tbody>
+                    </table>
+                    <button onclick="refreshLogs()">Refresh Logs</button>
+                    <button onclick="clearLogs()">Clear Logs</button>
                 </div>
             </section>
             <section id="manage-products">
@@ -70,10 +86,10 @@
                 <h2>Analytics</h2>
                 <p>View analytics data to understand system usage and performance trends.</p>
                 <div id="analytics-data">
-                    <canvas id="analytics-chart"></canvas> <!-- Placeholder for chart -->
+                    <canvas id="analytics-chart"></canvas>
                 </div>
                 <button onclick="loadAnalyticsData()">Refresh Analytics</button>
-                <button onclick="fetch('http://localhost:3000/api/analytics/reset', { method: 'POST' }).then(() => alert('Analytics reset successfully'));">Reset Analytics</button>
+                <button onclick="resetAnalytics()">Reset Analytics</button>
             </section>
             <section id="profile">
                 <h2>Profile</h2>
@@ -91,6 +107,65 @@
     <footer>
         <p>&copy; 2025 Admin Panel | Designed by Vishal Thakur</p>
     </footer>
-    <script src="admin.js"></script> <!-- Link to JavaScript file -->
+    <script src="admin.js"></script>
+    <script src="viewLogger.js"></script>
+    <script>
+    // Example: Populate dashboard with dummy data
+    document.getElementById('dashboard-total-users').textContent = 42;
+    document.getElementById('dashboard-total-products').textContent = 7;
+    document.getElementById('dashboard-active-sessions').textContent = 3;
+
+    // View Logger Table
+    function renderLogs() {
+        const logs = window.viewLogger.getViewLogs();
+        const tbody = document.getElementById('view-logs-table').querySelector('tbody');
+        tbody.innerHTML = '';
+        logs.forEach(log => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${log.label}</td><td>${log.timestamp}</td>`;
+            tbody.appendChild(row);
+        });
+    }
+    function refreshLogs() {
+        renderLogs();
+    }
+    function clearLogs() {
+        window.viewLogger.clearViewLogs();
+        renderLogs();
+    }
+    renderLogs();
+
+    // Analytics Chart Example
+    function loadAnalyticsData() {
+        const ctx = document.getElementById('analytics-chart').getContext('2d');
+        if (window.analyticsChart) window.analyticsChart.destroy();
+        window.analyticsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Users', 'Products', 'Sessions'],
+                datasets: [{
+                    label: 'Count',
+                    data: [
+                        parseInt(document.getElementById('dashboard-total-users').textContent, 10),
+                        parseInt(document.getElementById('dashboard-total-products').textContent, 10),
+                        parseInt(document.getElementById('dashboard-active-sessions').textContent, 10)
+                    ],
+                    backgroundColor: ['#3498db', '#2ecc71', '#e67e22']
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+    function resetAnalytics() {
+        alert('Analytics reset successfully');
+        loadAnalyticsData();
+    }
+    loadAnalyticsData();
+    </script>
 </body>
 </html>
