@@ -28,20 +28,20 @@ const services = [
 function renderServices() {
     const container = document.getElementById('services-list');
     container.innerHTML = '';
-    services.forEach(service => {
+    // Use localStorage services if available
+    let dynamicServices = [];
+    try {
+        dynamicServices = JSON.parse(localStorage.getItem('services')) || services;
+    } catch { dynamicServices = services; }
+    dynamicServices.forEach(service => {
         const div = document.createElement('div');
         div.className = 'service-card';
         div.innerHTML = `
-            <h4>${service.name}</h4>
-            <p>${service.description}</p>
-            <button class="avail-service-btn" data-id="${service.id}">Avail Service</button>
+            <h4>${service.name || service.title}</h4>
+            <p>${service.description || ''}</p>
+            <a href="service.html?id=${service.id || service.title}" class="btn-primary">View Details</a>
         `;
         container.appendChild(div);
-    });
-    document.querySelectorAll('.avail-service-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            openServiceModal(this.dataset.id);
-        });
     });
 }
 

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Service Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .service-detail-container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 16px #0001; padding: 2rem; }
+        .service-detail-container h2 { margin-top: 0; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.3rem; font-weight: 500; }
+        input, textarea { width: 100%; padding: 0.7rem; border-radius: 6px; border: 1px solid #ccc; }
+        button { background: #3498db; color: #fff; border: none; padding: 10px 22px; border-radius: 6px; font-size: 1rem; cursor: pointer; }
+        button:hover { background: #217dbb; }
+        .success-msg { color: #27ae60; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="service-detail-container">
+        <h2 id="service-title">Service</h2>
+        <div id="service-description"></div>
+        <hr>
+        <h3>Submit Your Project Requirements</h3>
+        <form id="requirement-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="client-name">Your Name*</label>
+                <input type="text" id="client-name" required>
+            </div>
+            <div class="form-group">
+                <label for="client-email">Email*</label>
+                <input type="email" id="client-email" required>
+            </div>
+            <div class="form-group">
+                <label for="project-title">Project Title*</label>
+                <input type="text" id="project-title" required>
+            </div>
+            <div class="form-group">
+                <label for="project-desc">Project Description*</label>
+                <textarea id="project-desc" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="client-phone">Phone (optional)</label>
+                <input type="text" id="client-phone">
+            </div>
+            <div class="form-group">
+                <label for="project-files">Attachments (optional)</label>
+                <input type="file" id="project-files" multiple>
+            </div>
+            <div class="form-group">
+                <label for="budget">Estimated Budget (optional)</label>
+                <input type="text" id="budget">
+            </div>
+            <div class="form-group">
+                <label for="timeframe">Desired Timeframe (optional)</label>
+                <input type="text" id="timeframe">
+            </div>
+            <button type="submit">Submit Requirements</button>
+        </form>
+        <div id="success-msg" class="success-msg" style="display:none;"></div>
+        <div id="advance-payment" style="display:none; margin-top:2rem;">
+            <h4>Pay Advance</h4>
+            <button id="pay-advance-btn">Pay Advance</button>
+        </div>
+    </div>
+    <script>
+    // Fetch service details
+    function getServiceById(id) {
+        let all = [];
+        try { all = JSON.parse(localStorage.getItem('services')) || []; } catch { all = []; }
+        let s = all.find(s => s.id == id || s.title == id);
+        if (!s) {
+            // fallback to static
+            const staticServices = [
+                { id: 1, name: "Website Development", description: "Custom website design and development tailored to your business needs." },
+                { id: 2, name: "Mobile App Development", description: "Native and cross-platform mobile app solutions." }
+            ];
+            s = staticServices.find(s => s.id == id);
+        }
+        return s;
+    }
+    const params = new URLSearchParams(window.location.search);
+    const serviceId = params.get('id');
+    const service = getServiceById(serviceId);
+    document.getElementById('service-title').textContent = service ? (service.name || service.title) : 'Service';
+    document.getElementById('service-description').textContent = service ? (service.description || '') : '';
+
+    // Handle requirement form
+    document.getElementById('requirement-form').onsubmit = function(e) {
+        e.preventDefault();
+        // Collect data
+        const data = {
+            serviceId,
+            name: document.getElementById('client-name').value,
+            email: document.getElementById('client-email').value,
+            projectTitle: document.getElementById('project-title').value,
+            projectDesc: document.getElementById('project-desc').value,
+            phone: document.getElementById('client-phone').value,
+            budget: document.getElementById('budget').value,
+            timeframe: document.getElementById('timeframe').value,
+            files: Array.from(document.getElementById('project-files').files).map(f => f.name)
+        };
+        // Save to localStorage (for demo; use backend in production)
+        let submissions = [];
+        try { submissions = JSON.parse(localStorage.getItem('service_submissions')) || []; } catch { submissions = []; }
+        submissions.push(data);
+        localStorage.setItem('service_submissions', JSON.stringify(submissions));
+        document.getElementById('success-msg').textContent = "Your requirements have been submitted!";
+        document.getElementById('success-msg').style.display = 'block';
+        document.getElementById('advance-payment').style.display = 'block';
+        this.reset();
+    };
+
+    // Advance Payment (placeholder)
+    document.getElementById('pay-advance-btn').onclick = function() {
+        alert('Advance payment integration goes here (Razorpay/Stripe/Paytm).');
+    };
+    </script>
+</body>
+</html>
