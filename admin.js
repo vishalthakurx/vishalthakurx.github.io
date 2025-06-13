@@ -195,4 +195,20 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Invalid credentials!");
         }
     });
+
+    // Admin panel access check
+    const adminPanel = document.getElementById('admin-panel');
+    if (!isAdmin() && adminPanel) {
+        adminPanel.style.display = 'none';
+        // Optionally, show a message or redirect
+        // window.location.href = '/';
+    }
 });
+
+// Replace 'YOUR_SECRET_TOKEN' with your actual secret
+const ADMIN_TOKEN = 'YOUR_SECRET_TOKEN';
+
+function isAdmin() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('admin') === ADMIN_TOKEN;
+}
