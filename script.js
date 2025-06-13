@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFormValidation();
     setupUPIPayment();
     setupScrollAnimations();
+    setupHoverAnimations();
     setupHireMeButton();
     setupScrollToTopButton();
     setupLazyLoading();
@@ -112,13 +113,27 @@ async function handleBuy(productId, paymentMethod, paymentDetails) {
 }
 
 function setupScrollAnimations() {
-    const elements = document.querySelectorAll('.fadeInBounce');
-    elements.forEach(element => {
-        const position = element.getBoundingClientRect().top;
-        const windowHeight = window.innerHeight;
-        if (position < windowHeight - 100) {
-            element.classList.add('visible');
-        }
+    const animatedElements = document.querySelectorAll('.animated-on-scroll');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('fadeInBounce', 'visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.2 });
+
+    animatedElements.forEach(el => observer.observe(el));
+}
+
+function setupHoverAnimations() {
+    document.querySelectorAll('.card, .btn, .nav-link').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            el.classList.add('pulse');
+        });
+        el.addEventListener('animationend', () => {
+            el.classList.remove('pulse');
+        });
     });
 }
 
