@@ -1,8 +1,8 @@
 // Search functionality
-const defaultCredentials = {
-    username: "Cobra",
-    password: "1234"
-};
+const defaultCredentials = [
+    { username: "cobra", password: "1234" },
+    { username: "admin", password: "password123" }
+];
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('search-button').addEventListener('click', () => {
@@ -179,7 +179,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (username === defaultCredentials.username && password === defaultCredentials.password) {
+        const valid = defaultCredentials.some(
+            cred => cred.username === username && cred.password === password
+        );
+
+        if (valid) {
             alert("Login successful!");
             const dashboard = document.getElementById('admin-dashboard');
             if (dashboard) {

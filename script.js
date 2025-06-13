@@ -19,7 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = document.getElementById("admin-username").value;
         const password = document.getElementById("admin-password").value;
 
-        if (username === "admin" && password === "password123") {
+        if (
+            (username === "admin" && password === "password123") ||
+            (username === "cobra" && password === "1234")
+        ) {
             adminLoginForm.classList.add("hidden");
             adminDashboard.classList.remove("hidden");
         } else {
