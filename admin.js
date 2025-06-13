@@ -15,43 +15,90 @@ document.getElementById('search-button').addEventListener('click', () => {
 });
 
 // User management functionality
-document.getElementById('add-user').addEventListener('click', () => {
-    console.log('Add User button clicked');
-    // Implement add user logic here
+document.getElementById('add-user').addEventListener('click', async () => {
+    const username = prompt("Enter username to add:");
+    if (username) {
+        await addUser(username);
+    } else {
+        alert("Username cannot be empty.");
+    }
 });
 
-document.getElementById('remove-user').addEventListener('click', () => {
-    console.log('Remove User button clicked');
-    // Implement remove user logic here
+document.getElementById('remove-user').addEventListener('click', async () => {
+    const username = prompt("Enter username to remove:");
+    if (username) {
+        await removeUser(username);
+    } else {
+        alert("Username cannot be empty.");
+    }
 });
 
 // Product management functionality
-document.getElementById('add-product').addEventListener('click', () => {
-    console.log('Add Product button clicked');
-    // Implement add product logic here
+document.getElementById('add-product').addEventListener('click', async () => {
+    const name = prompt("Enter product name:");
+    const price = parseFloat(prompt("Enter product price:"));
+    if (name && !isNaN(price)) {
+        const response = await fetch('http://localhost:3000/api/products', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, price }),
+        });
+        const result = await response.json();
+        console.log(result);
+    } else {
+        alert("Invalid product details.");
+    }
 });
 
-document.getElementById('edit-product').addEventListener('click', () => {
-    console.log('Edit Product button clicked');
-    // Implement edit product logic here
+document.getElementById('edit-product').addEventListener('click', async () => {
+    const name = prompt("Enter product name to edit:");
+    const price = parseFloat(prompt("Enter new product price:"));
+    if (name && !isNaN(price)) {
+        const response = await fetch(`http://localhost:3000/api/products/${name}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ price }),
+        });
+        const result = await response.json();
+        console.log(result);
+    } else {
+        alert("Invalid product details.");
+    }
 });
 
-document.getElementById('delete-product').addEventListener('click', () => {
-    console.log('Delete Product button clicked');
-    // Implement delete product logic here
+document.getElementById('delete-product').addEventListener('click', async () => {
+    const name = prompt("Enter product name to delete:");
+    if (name) {
+        const response = await fetch(`http://localhost:3000/api/products/${name}`, {
+            method: 'DELETE',
+        });
+        const result = await response.json();
+        console.log(result);
+    } else {
+        alert("Product name cannot be empty.");
+    }
 });
 
 // Settings functionality
-document.getElementById('update-settings').addEventListener('click', () => {
-    console.log('Update Settings button clicked');
-    // Implement settings update logic here
+document.getElementById('update-settings').addEventListener('click', async () => {
+    const theme = prompt("Enter theme (light/dark):");
+    const notifications = confirm("Enable notifications?");
+    const response = await fetch('http://localhost:3000/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme, notifications }),
+    });
+    const result = await response.json();
+    console.log(result);
 });
 
 // Analytics functionality
-function loadAnalyticsData() {
-    console.log('Loading analytics data...');
+async function loadAnalyticsData() {
     try {
-        // Implement analytics data fetching and rendering logic here
+        const response = await fetch('http://localhost:3000/api/analytics');
+        const analytics = await response.json();
+        const analyticsSection = document.getElementById('analytics-data');
+        analyticsSection.innerHTML = `<p>Visits: ${analytics.analytics.visits}</p>`;
     } catch (error) {
         console.error("Error loading analytics data:", error);
     }
@@ -104,3 +151,31 @@ document.getElementById('admin-login-form').addEventListener('submit', (e) => {
         alert("Invalid credentials!");
     }
 });
+
+// API integration for user management
+async function fetchUsers() {
+    const response = await fetch('http://localhost:3000/api/users');
+    const users = await response.json();
+    console.log(users);
+}
+
+async function addUser(username) {
+    const response = await fetch('http://localhost:3000/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+    });
+    const result = await response.json();
+    console.log(result);
+}
+
+async function removeUser(username) {
+    const response = await fetch(`http://localhost:3000/api/users/${username}`, {
+        method: 'DELETE',
+    });
+    const result = await response.json();
+    console.log(result);
+}
+
+// Example usage
+fetchUsers();

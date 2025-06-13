@@ -48,13 +48,21 @@
             <h2>Analytics</h2>
             <p>View analytics data to understand system usage and performance trends.</p>
             <div id="analytics-data">
-                <p>Data will be displayed here.</p>
+                <p>Loading analytics data...</p>
             </div>
+            <button onclick="loadAnalyticsData()">Refresh Analytics</button>
+            <button onclick="fetch('http://localhost:3000/api/analytics/reset', { method: 'POST' }).then(() => alert('Analytics reset successfully'));">Reset Analytics</button>
         </section>
         <section id="profile">
             <h2>Profile</h2>
             <p>This is an image of Vishal Thakur.</p>
             <img src="1748782323973.jpg" alt="Vishal Thakur" style="max-width: 100%; height: auto;">
+        </section>
+        <section id="backend-integration">
+            <h2>Backend Integration</h2>
+            <button onclick="fetchUsers()">Fetch Users</button>
+            <button onclick="addUser('TestUser')">Add User</button>
+            <button onclick="removeUser('TestUser')">Remove User</button>
         </section>
     </main>
     <footer>
