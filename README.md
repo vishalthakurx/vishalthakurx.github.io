@@ -15,6 +15,17 @@ This is the source code for my personal website hosted on GitHub Pages at [visha
 ## How to View
 Visit [vishalthakurx.me](https://vishalthakurx.me) to view the website.
 
+## Project Hierarchy
+
+```
+vishalthakurx.github.io/
+├── adminpanel.html
+├── index.html
+├── style.css
+├── README.md
+├── [other HTML/CSS/JS files...]
+```
+
 ## Deployment Steps
 1. Clone the repository:
    ```bash

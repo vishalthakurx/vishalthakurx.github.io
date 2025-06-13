@@ -198,6 +198,7 @@
                 <button id="save-content-btn">Save All</button>
                 <button id="disable-edit-btn">Disable Edit</button>
                 <div class="info-note">(Edits apply to the main site. Reload the main site to see changes.)</div>
+                <div id="editable-main-content" style="margin-top:24px;background:#f8fafc;border:1.5px solid #dbeafe;border-radius:8px;padding:18px 16px;min-height:200px;max-height:60vh;overflow-y:auto;font-size:1.05em;"></div>
             </div>
             <div id="admin-ecom" class="admin-section">
                 <h3>Manage Services</h3>
@@ -254,41 +255,34 @@
     // --- Admin Panel Standalone Functionality (GitHub Pages compatible) ---
 
     // Content Editor for main site
-    function setEditable(enabled) {
-        let mainContent = document.getElementById('editable-main-content');
-        if (!mainContent) {
-            mainContent = document.createElement('div');
-            mainContent.id = 'editable-main-content';
-            mainContent.style.marginTop = '24px';
-            mainContent.style.background = '#f8fafc';
-            mainContent.style.border = '1.5px solid #dbeafe';
-            mainContent.style.borderRadius = '8px';
-            mainContent.style.padding = '18px 16px';
-            mainContent.style.minHeight = '200px';
-            mainContent.style.maxHeight = '60vh';
-            mainContent.style.overflowY = 'auto';
-            mainContent.style.fontSize = '1.05em';
-            mainContent.innerHTML = localStorage.getItem('mainContent') || '';
-            document.querySelector('.container').appendChild(mainContent);
-        }
-        if (enabled) {
-            mainContent.setAttribute('contenteditable', 'true');
-            mainContent.focus();
-        } else {
+    function loadMainContent() {
+        const mainContent = document.getElementById('editable-main-content');
+        if (mainContent) {
+            mainContent.innerHTML = localStorage.getItem('mainContent') || '<p>Welcome to Vishal Thakur\'s site!</p>';
             mainContent.removeAttribute('contenteditable');
         }
     }
+    function setEditable(enabled) {
+        const mainContent = document.getElementById('editable-main-content');
+        if (mainContent) {
+            if (enabled) {
+                mainContent.setAttribute('contenteditable', 'true');
+                mainContent.focus();
+            } else {
+                mainContent.removeAttribute('contenteditable');
+            }
+        }
+    }
     function saveContent() {
-        let mainContent = document.getElementById('editable-main-content');
+        const mainContent = document.getElementById('editable-main-content');
         if (mainContent) {
             localStorage.setItem('mainContent', mainContent.innerHTML);
             alert('Content saved! Reload the main site to see changes.');
-            mainContent.remove();
+            mainContent.removeAttribute('contenteditable');
         }
     }
     function disableEdit() {
-        let mainContent = document.getElementById('editable-main-content');
-        if (mainContent) mainContent.removeAttribute('contenteditable');
+        setEditable(false);
     }
 
     // Helpers for localStorage
@@ -432,6 +426,9 @@
             adminSections.forEach(s => s.classList.remove('active'));
             tab.classList.add('active');
             document.getElementById('admin-' + tab.dataset.tab).classList.add('active');
+            if (tab.dataset.tab === 'content') {
+                loadMainContent();
+            }
             if (tab.dataset.tab === 'messages') renderMessages();
             if (tab.dataset.tab === 'files') renderFiles();
         }
@@ -456,6 +453,7 @@
                     logoutBtn.classList.remove('hidden');
                     renderUsers();
                     renderServices();
+                    loadMainContent();
                 }, 700);
             } else {
                 alert('Invalid credentials');
@@ -472,6 +470,7 @@
     window.addEventListener('DOMContentLoaded', () => {
         renderUsers();
         renderServices();
+        loadMainContent();
     });
     </script>
 </body>
