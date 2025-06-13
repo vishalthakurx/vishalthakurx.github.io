@@ -145,6 +145,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     loadAnalyticsData();
 
+    // Analytics Chart for Page Views & Interactions
+    function renderAnalyticsCharts() {
+        const analytics = window.siteAnalytics ? window.siteAnalytics.get() : JSON.parse(localStorage.getItem('siteAnalytics') || '{}');
+        const pageViews = analytics.pageViews || 0;
+        const interactions = analytics.interactions || {};
+
+        // Page Views Chart
+        const pvCtx = document.getElementById('analytics-pageviews-chart');
+        if (pvCtx) {
+            new Chart(pvCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Page Views'],
+                    datasets: [{
+                        data: [pageViews],
+                        backgroundColor: ['#3498db']
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    responsive: true
+                }
+            });
+        }
+
+        // Interactions Chart
+        const intCtx = document.getElementById('analytics-interactions-chart');
+        if (intCtx) {
+            new Chart(intCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(interactions),
+                    datasets: [{
+                        label: 'Interactions',
+                        data: Object.values(interactions),
+                        backgroundColor: '#2ecc71'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+    }
+
+    // Call after DOM ready
+    renderAnalyticsCharts();
+
     // Function to dynamically update the profile section
     function updateProfile() {
         const profileSection = document.getElementById('profile');
@@ -203,6 +252,26 @@ document.addEventListener('DOMContentLoaded', () => {
         // Optionally, show a message or redirect
         // window.location.href = '/';
     }
+
+    // View Counter Logic
+    function incrementViewCounter() {
+        let count = parseInt(localStorage.getItem('adminViewCounter') || '0', 10);
+        count += 1;
+        localStorage.setItem('adminViewCounter', count);
+        const counterElem = document.getElementById('dashboard-view-counter');
+        if (counterElem) counterElem.textContent = count;
+    }
+
+    function displayViewCounter() {
+        const counterElem = document.getElementById('dashboard-view-counter');
+        if (counterElem) {
+            let count = parseInt(localStorage.getItem('adminViewCounter') || '0', 10);
+            counterElem.textContent = count;
+        }
+    }
+
+    incrementViewCounter();
+    displayViewCounter();
 });
 
 // Replace 'YOUR_SECRET_TOKEN' with your actual secret

@@ -6,6 +6,7 @@
     <title>Admin Panel</title>
     <link rel="stylesheet" href="styles.css"> <!-- Updated CSS file -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome for icons -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
@@ -36,6 +37,7 @@
                             <li>Total Users: <span id="dashboard-total-users">0</span></li>
                             <li>Total Products: <span id="dashboard-total-products">0</span></li>
                             <li>Active Sessions: <span id="dashboard-active-sessions">0</span></li>
+                            <li>Total Admin Panel Views: <span id="dashboard-view-counter">0</span></li>
                         </ul>
                     </div>
                     <div class="card">
@@ -53,6 +55,19 @@
                         </table>
                         <button onclick="refreshLogs()">Refresh Logs</button>
                         <button onclick="clearLogs()">Clear Logs</button>
+                    </div>
+                    <div class="card">
+                        <h3>Website Analytics</h3>
+                        <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                            <div>
+                                <strong>Page Views</strong>
+                                <canvas id="analytics-pageviews-chart" width="200" height="200"></canvas>
+                            </div>
+                            <div>
+                                <strong>Element Interactions</strong>
+                                <canvas id="analytics-interactions-chart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </section>
                 <section id="manage-products">
@@ -116,6 +131,7 @@
     document.getElementById('dashboard-total-users').textContent = 42;
     document.getElementById('dashboard-total-products').textContent = 7;
     document.getElementById('dashboard-active-sessions').textContent = 3;
+    document.getElementById('dashboard-view-counter').textContent = 100; // Example view counter
 
     // View Logger Table
     function renderLogs() {
