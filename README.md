@@ -1,6 +1,6 @@
 # vishalthakurx.github.io
 
-This is the source code for my personal website hosted on GitHub Pages at [vishalthakur.me](https://vishalthakur.me).
+This is the source code for my personal website hosted on GitHub Pages at [vishalthakurx.me](https://vishalthakurx.me).
 
 ## Features
 - **About Me** section
@@ -13,7 +13,7 @@ This is the source code for my personal website hosted on GitHub Pages at [visha
 - GitHub Pages
 
 ## How to View
-Visit [vishalthakur.me](https://vishalthakur.me) to view the website.
+Visit [vishalthakurx.me](https://vishalthakurx.me) to view the website.
 
 ## Deployment Steps
 1. Clone the repository:
