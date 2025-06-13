@@ -5,58 +5,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
     <link rel="stylesheet" href="styles/admin-panel.css">
-    <!-- Add any additional styles or meta from admin.html here -->
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Admin Panel</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="#dashboard">Dashboard</a></li>
-                <li><a href="#users">User Management</a></li>
-                <li><a href="#products">Product Management</a></li>
-                <li><a href="#settings">Settings</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <section id="admin-login-section">
-            <h2>Admin Login</h2>
-            <form id="admin-login-form">
-                <label for="admin-username">Username:</label>
-                <input type="text" id="admin-username" required>
-                <label for="admin-password">Password:</label>
-                <input type="password" id="admin-password" required>
-                <button type="submit">Login</button>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1><i class="fa-solid fa-user-shield"></i> Admin</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html"><i class="fa fa-home"></i> Home</a></li>
+                    <li><a href="#dashboard"><i class="fa fa-chart-line"></i> Dashboard</a></li>
+                    <li><a href="#users"><i class="fa fa-users"></i> Users</a></li>
+                    <li><a href="#products"><i class="fa fa-box"></i> Products</a></li>
+                    <li><a href="#analytics"><i class="fa fa-chart-pie"></i> Analytics</a></li>
+                    <li><a href="#settings"><i class="fa fa-cog"></i> Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <section id="admin-login-section" class="card center">
+                <h2>Admin Login</h2>
+                <form id="admin-login-form" class="form-modern" autocomplete="off" aria-labelledby="admin-login-section">
+                    <div class="form-group">
+                        <label for="admin-username"><i class="fa fa-user"></i> Username</label>
+                        <input type="text" id="admin-username" required pattern="^[a-zA-Z0-9_]{4,16}$" aria-required="true" aria-describedby="username-help">
+                        <small id="username-help" class="form-text">4-16 chars, letters, numbers, underscores.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-password"><i class="fa fa-lock"></i> Password</label>
+                        <div style="position:relative;">
+                            <input type="password" id="admin-password" required aria-required="true" autocomplete="current-password">
+                            <button type="button" id="toggle-password" aria-label="Show/Hide Password" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;">
+                                <i class="fa fa-eye" id="toggle-password-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Login</button>
+                </form>
+            </section>
+            <section id="admin-dashboard" class="hidden">
+                <section id="dashboard">
+                    <h2>Dashboard</h2>
+                    <div class="dashboard-cards">
+                        <div class="dashboard-card">
+                            <div class="card-icon"><i class="fa fa-users"></i></div>
+                            <div>
+                                <div class="card-title">Total Users</div>
+                                <div class="card-value" id="dashboard-total-users">0</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="card-icon"><i class="fa fa-box"></i></div>
+                            <div>
+                                <div class="card-title">Total Products</div>
+                                <div class="card-value" id="dashboard-total-products">0</div>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="card-icon"><i class="fa fa-chart-pie"></i></div>
+                            <div>
+                                <div class="card-title">Active Sessions</div>
+                                <div class="card-value" id="dashboard-active-sessions">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section id="users">
+                    <div class="section-header">
+                        <h2>User Management</h2>
+                        <button id="add-user-btn" class="btn-secondary"><i class="fa fa-plus"></i> Add User</button>
+                    </div>
+                    <ul id="user-list" class="list-modern"></ul>
+                </section>
+                <section id="products">
+                    <div class="section-header">
+                        <h2>Product Management</h2>
+                        <button id="add-product-btn" class="btn-secondary"><i class="fa fa-plus"></i> Add Product</button>
+                    </div>
+                    <ul id="product-list" class="list-modern"></ul>
+                </section>
+                <section id="analytics">
+                    <h2>Analytics</h2>
+                    <div class="analytics-controls">
+                        <button id="refresh-analytics" class="btn-secondary"><i class="fa fa-sync"></i> Refresh</button>
+                        <button id="reset-analytics" class="btn-danger"><i class="fa fa-trash"></i> Reset</button>
+                    </div>
+                    <canvas id="analytics-chart" style="max-width: 100%; background: #fff; border-radius: 8px; margin-top: 20px;"></canvas>
+                </section>
+                <section id="settings">
+                    <h2>Settings</h2>
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label for="theme-select"><i class="fa fa-paint-brush"></i> Theme</label>
+                            <select id="theme-select">
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="notifications-toggle"><i class="fa fa-bell"></i> Notifications</label>
+                            <input type="checkbox" id="notifications-toggle">
+                        </div>
+                        <button type="submit" class="btn-primary"><i class="fa fa-save"></i> Save Settings</button>
+                    </form>
+                    <button id="logout-btn" class="btn-danger" style="margin-top:20px;"><i class="fa fa-sign-out-alt"></i> Logout</button>
+                </section>
+            </section>
+        </main>
+    </div>
+    <!-- Modal for Add User/Product -->
+    <div id="modal-overlay" class="hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div id="modal-content">
+            <h3 id="modal-title"></h3>
+            <form id="modal-form">
+                <!-- Dynamic form fields will be injected here -->
             </form>
-        </section>
-        <section id="admin-dashboard" class="hidden">
-            <section id="dashboard">
-                <h2>Dashboard</h2>
-                <div>
-                    <strong>Total Users:</strong> <span id="dashboard-total-users">0</span><br>
-                    <strong>Total Products:</strong> <span id="dashboard-total-products">0</span>
-                </div>
-            </section>
-            <section id="users">
-                <h2>User Management</h2>
-                <button id="add-user-btn">Add User</button>
-                <ul id="user-list"></ul>
-            </section>
-            <section id="products">
-                <h2>Product Management</h2>
-                <button id="add-product-btn">Add Product</button>
-                <ul id="product-list"></ul>
-            </section>
-            <section id="settings">
-                <h2>Settings</h2>
-                <button id="logout-btn">Logout</button>
-            </section>
-        </section>
-        <!-- Add any additional sections from admin.html here -->
-    </main>
+            <div style="margin-top:16px;">
+                <button id="modal-save-btn" class="btn-primary">Save</button>
+                <button id="modal-cancel-btn" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
     <script src="scripts/admin-panel.js"></script>
-    <!-- Add any additional scripts from admin.html here -->
+    <script src="scripts/admin-modal.js"></script>
 </body>
 </html>
