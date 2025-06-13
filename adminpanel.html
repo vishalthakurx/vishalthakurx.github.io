@@ -210,3 +210,70 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<body>
+    <!-- Dashboard Summary -->
+    <div id="dashboard">
+        <h2>Dashboard</h2>
+        <div>
+            <span>Total Users: <span id="dashboard-total-users">0</span></span> |
+            <span>Total Products: <span id="dashboard-total-products">0</span></span>
+        </div>
+    </div>
+
+    <!-- User Management -->
+    <section>
+        <h3>Users</h3>
+        <button id="add-user-btn" class="btn-primary">Add User</button>
+        <ul id="user-list"></ul>
+    </section>
+
+    <!-- Product Management -->
+    <section>
+        <h3>Products</h3>
+        <ul id="product-list"></ul>
+    </section>
+
+    <!-- Service Management -->
+    <section>
+        <h3>Services</h3>
+        <button id="add-service-btn" class="btn-primary">Add Service</button>
+        <ul id="service-list"></ul>
+    </section>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="hidden" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;z-index:1000;">
+        <div style="background:#fff;padding:24px;border-radius:8px;min-width:300px;position:relative;">
+            <h4 id="modal-title"></h4>
+            <form id="modal-form"></form>
+            <div style="margin-top:16px;">
+                <button id="modal-save-btn" class="btn-primary">Save</button>
+                <button type="button" id="modal-cancel-btn" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" style="position:fixed;bottom:24px;right:24px;background:#333;color:#fff;padding:12px 24px;border-radius:4px;display:none;z-index:2000;"></div>
+
+    <script>
+    // Modal and Toast helpers
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalTitle = document.getElementById('modal-title');
+    const modalForm = document.getElementById('modal-form');
+    const modalSaveBtn = document.getElementById('modal-save-btn');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+    const toast = document.getElementById('toast');
+
+    function closeModal() {
+        modalOverlay.classList.add('hidden');
+    }
+    modalCancelBtn.onclick = closeModal;
+
+    function showToast(msg) {
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    }
+    </script>
+</body>
