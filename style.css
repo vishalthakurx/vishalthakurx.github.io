@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
@@ -9,8 +9,36 @@ body {
 header {
     background-color: #0078d7;
     color: white;
-    padding: 1rem;
+    padding: 2rem;
     text-align: center;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+header h2 {
+    font-size: 1.5rem;
+    margin: 0.5rem 0 0;
+}
+
+header .nav-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+    display: flex;
+    justify-content: center;
+}
+
+header .nav-menu ul li {
+    margin: 0 1rem;
+}
+
+header .nav-menu ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
 }
 
 main {
@@ -19,6 +47,11 @@ main {
 
 section {
     margin-bottom: 2rem;
+}
+
+section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
 }
 
 footer {
