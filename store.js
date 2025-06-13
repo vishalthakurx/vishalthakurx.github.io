@@ -49,3 +49,27 @@ function saveThemePreference(theme) {
 function getThemePreference() {
     return localStorage.getItem('theme') || 'light'; // Default to 'light' theme
 }
+
+// Add logic to allow UPI payment from the manual input field in #payment-methods
+window.initiateUPIPayment = async function () {
+    const upiIdInput = document.getElementById('upiId');
+    const upiId = upiIdInput ? upiIdInput.value.trim() : '';
+    if (!upiId) {
+        alert('Please enter your UPI ID.');
+        return;
+    }
+    // For demo, ask for amount
+    let amount = prompt('Enter amount to pay:');
+    if (!amount) {
+        alert('Amount is required.');
+        return;
+    }
+    try {
+        // Dynamically import buy.js for modularity
+        const { handleBuy } = await import('./buy.js');
+        const result = await handleBuy('manual-upi', 'UPI', { upiId, amount });
+        alert(result);
+    } catch (error) {
+        alert('Payment failed: ' + error.message);
+    }
+};

@@ -1,4 +1,3 @@
-
 export async function processUPIPayment(upiId, amount) {
     try {
         // Simulate UPI payment processing

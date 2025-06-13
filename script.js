@@ -85,30 +85,33 @@ function setupUPIPayment() {
     const buyButtons = document.querySelectorAll('.buy-now');
     buyButtons.forEach(button => {
         button.addEventListener('click', async () => {
-            const productId = button.getAttribute('data-product-id');
-            const paymentMethod = "UPI";
-            const paymentDetails = { upiLink: button.getAttribute('data-upi') };
-
+            const upiLink = button.getAttribute('data-upi');
+            let upiId = '';
+            let amount = '';
+            if (upiLink && upiLink.startsWith('upi://')) {
+                const url = new URL(upiLink.replace('upi://pay?', 'http://dummy?'));
+                upiId = url.searchParams.get('pa') || '';
+                amount = url.searchParams.get('am') || '';
+            }
+            if (!upiId) {
+                upiId = prompt('Enter your UPI ID:');
+            }
+            if (!amount) {
+                amount = prompt('Enter amount to pay:');
+            }
+            if (!upiId || !amount) {
+                alert('UPI ID and amount are required.');
+                return;
+            }
             try {
-                const result = await handleBuy(productId, paymentMethod, paymentDetails);
+                const { handleBuy } = await import('./buy.js');
+                const result = await handleBuy(button.getAttribute('data-service') || 'product', 'UPI', { upiId, amount });
                 alert(result);
             } catch (error) {
                 console.error("Payment failed:", error);
+                alert("Payment failed: " + error.message);
             }
         });
-    });
-}
-
-async function handleBuy(productId, paymentMethod, paymentDetails) {
-    console.log(`Processing payment for product: ${productId}`);
-    console.log(`Payment method: ${paymentMethod}`);
-    console.log(`Payment details:`, paymentDetails);
-
-    // Simulate payment processing
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve("Payment successful!");
-        }, 2000);
     });
 }
 
@@ -203,7 +206,6 @@ function updateAdminPanel() {
     const adminPanel = document.getElementById("admin-panel");
     const userList = document.getElementById("user-list");
 
-    // Example logic to dynamically update the admin panel
     const newUser = document.createElement("li");
     newUser.textContent = "New User";
     userList.appendChild(newUser);

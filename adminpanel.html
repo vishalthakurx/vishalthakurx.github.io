@@ -237,6 +237,95 @@
                 toast.style.display = 'none';
             }, 2000);
         }
+
+        // DARK MODE SWITCH
+        const themeSelect = document.getElementById('theme-select');
+        themeSelect.addEventListener('change', function() {
+            if (this.value === 'dark') {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('admin-theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('admin-theme', 'light');
+            }
+        });
+        // On load, apply saved theme
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('admin-theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeSelect.value = 'dark';
+            }
+        });
+
+        // ADD PRODUCT FLOW
+        const addProductBtn = document.getElementById('add-product-btn');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalForm = document.getElementById('modal-form');
+        const modalSaveBtn = document.getElementById('modal-save-btn');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const productList = document.getElementById('product-list');
+        let products = [];
+
+        addProductBtn.addEventListener('click', function() {
+            openProductModal();
+        });
+
+        function openProductModal(product = null) {
+            modalTitle.textContent = product ? 'Edit Product' : 'Add Product';
+            modalForm.innerHTML = `
+                <div class="form-group">
+                    <label for="product-name">Name</label>
+                    <input type="text" id="product-name" required value="${product ? product.name : ''}">
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Price</label>
+                    <input type="number" id="product-price" required min="0" value="${product ? product.price : ''}">
+                </div>
+            `;
+            modalOverlay.classList.remove('hidden');
+            modalSaveBtn.onclick = function(e) {
+                e.preventDefault();
+                const name = document.getElementById('product-name').value.trim();
+                const price = parseFloat(document.getElementById('product-price').value);
+                if (!name || isNaN(price)) {
+                    showToast('Please enter valid product details.');
+                    return;
+                }
+                if (product) {
+                    product.name = name;
+                    product.price = price;
+                } else {
+                    products.push({ name, price });
+                }
+                renderProductList();
+                closeModal();
+                showToast(product ? 'Product updated.' : 'Product added.');
+            };
+        }
+
+        modalCancelBtn.onclick = closeModal;
+        modalOverlay.onclick = function(e) {
+            if (e.target === modalOverlay) closeModal();
+        };
+        function closeModal() {
+            modalOverlay.classList.add('hidden');
+            modalForm.innerHTML = '';
+        }
+
+        function renderProductList() {
+            productList.innerHTML = '';
+            products.forEach((product, idx) => {
+                const li = document.createElement('li');
+                li.textContent = `${product.name} - ₹${product.price}`;
+                productList.appendChild(li);
+            });
+            document.getElementById('dashboard-total-products').textContent = products.length;
+        }
+
+        // Initialize product list on load
+        window.addEventListener('DOMContentLoaded', renderProductList);
     </script>
     <script>
         function renderLogs() {
@@ -259,5 +348,31 @@
         // Initial render
         renderLogs();
     </script>
+    <style>
+        /* Minimal dark mode styles */
+        body.dark-mode {
+            background: #181c24 !important;
+            color: #f1f1f1 !important;
+        }
+        body.dark-mode .card,
+        body.dark-mode .main-content,
+        body.dark-mode .sidebar,
+        body.dark-mode #modal-content {
+            background: #23272f !important;
+            color: #f1f1f1 !important;
+        }
+        body.dark-mode input,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background: #23272f !important;
+            color: #f1f1f1 !important;
+            border-color: #444 !important;
+        }
+        body.dark-mode .btn-primary,
+        body.dark-mode .btn-secondary,
+        body.dark-mode .btn-danger {
+            filter: brightness(0.9);
+        }
+    </style>
 </body>
 </html>
