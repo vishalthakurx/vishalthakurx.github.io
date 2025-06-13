@@ -21,6 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please fill out all fields.');
         }
     });
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+    });
 });
 
 document.addEventListener('scroll', () => {

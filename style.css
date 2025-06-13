@@ -1,14 +1,32 @@
+:root {
+    --primary-color: #0078d7;
+    --secondary-color: #0053a6;
+    --background-color: #f4f4f4;
+    --text-color: #333;
+    --button-color: #0078d7;
+    --button-hover-color: #0053a6;
+}
+
+body.dark-mode {
+    --primary-color: #1e1e1e;
+    --secondary-color: #333;
+    --background-color: #121212;
+    --text-color: #f4f4f4;
+    --button-color: #444;
+    --button-hover-color: #666;
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 header {
-    background: linear-gradient(to right, #0078d7, #0053a6);
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -180,7 +198,7 @@ section.store .service p {
 }
 
 section.store .service .buy-now {
-    background: #0078d7;
+    background: var(--button-color);
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -190,11 +208,11 @@ section.store .service .buy-now {
 }
 
 section.store .service .buy-now:hover {
-    background: #0053a6;
+    background: var(--button-hover-color);
 }
 
 #purchase-modal button {
-    background: #0078d7;
+    background: var(--button-color);
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -205,7 +223,7 @@ section.store .service .buy-now:hover {
 }
 
 #purchase-modal button:hover {
-    background: #0053a6;
+    background: var(--button-hover-color);
 }
 
 .project {
@@ -230,7 +248,7 @@ form input, form textarea {
 
 form button {
     padding: 10px;
-    background-color: #007BFF;
+    background-color: var(--primary-color);
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -238,7 +256,7 @@ form button {
 }
 
 form button:hover {
-    background-color: #0056b3;
+    background-color: var(--secondary-color);
 }
 
 .graphic {
@@ -261,7 +279,7 @@ form button:hover {
 }
 
 button {
-    background-color: #0078d7;
+    background-color: var(--button-color);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -271,7 +289,7 @@ button {
 }
 
 button:hover {
-    background-color: #0053a6;
+    background-color: var(--button-hover-color);
     animation: pulse 0.5s infinite;
 }
 
