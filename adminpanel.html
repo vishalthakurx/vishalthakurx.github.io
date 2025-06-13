@@ -251,7 +251,7 @@
         </div>
     </div>
     <script>
-    // --- Admin Panel Standalone Functionality ---
+    // --- Admin Panel Standalone Functionality (GitHub Pages compatible) ---
 
     // Content Editor for main site
     function setEditable(enabled) {
@@ -268,7 +268,7 @@
             mainContent.style.maxHeight = '60vh';
             mainContent.style.overflowY = 'auto';
             mainContent.style.fontSize = '1.05em';
-            mainContent.innerHTML = '';
+            mainContent.innerHTML = localStorage.getItem('mainContent') || '';
             document.querySelector('.container').appendChild(mainContent);
         }
         if (enabled) {
@@ -281,6 +281,7 @@
     function saveContent() {
         let mainContent = document.getElementById('editable-main-content');
         if (mainContent) {
+            localStorage.setItem('mainContent', mainContent.innerHTML);
             alert('Content saved! Reload the main site to see changes.');
             mainContent.remove();
         }
@@ -290,48 +291,48 @@
         if (mainContent) mainContent.removeAttribute('contenteditable');
     }
 
-    // API helpers
-    async function apiGet(url) {
-        const res = await fetch(url);
-        return res.json();
+    // Helpers for localStorage
+    function getLS(key, fallback) {
+        try {
+            return JSON.parse(localStorage.getItem(key)) || fallback;
+        } catch { return fallback; }
     }
-    async function apiPost(url, data) {
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        return res.json();
+    function setLS(key, val) {
+        localStorage.setItem(key, JSON.stringify(val));
     }
 
-    // User Management (replace localStorage)
+    // User Management (localStorage)
     async function renderUsers() {
         const userList = document.getElementById('user-list');
-        const users = await apiGet('/api/users');
+        const users = getLS('users', []);
         if (userList) {
             userList.innerHTML = users.map((u, i) =>
                 `<div><span>${u.username}</span> <button onclick="removeUser('${u.username}')">Remove</button></div>`
             ).join('');
         }
     }
-    window.removeUser = async function(username) {
-        await fetch(`/api/users/${encodeURIComponent(username)}`, { method: 'DELETE' });
+    window.removeUser = function(username) {
+        let users = getLS('users', []);
+        users = users.filter(u => u.username !== username);
+        setLS('users', users);
         renderUsers();
     }
     const addUserForm = document.getElementById('add-user-form');
     if (addUserForm) {
-        addUserForm.onsubmit = async function(e) {
+        addUserForm.onsubmit = function(e) {
             e.preventDefault();
-            await apiPost('/api/users', { username: this['new-username'].value, password: this['new-password'].value });
+            const users = getLS('users', []);
+            users.push({ username: this['new-username'].value, password: this['new-password'].value });
+            setLS('users', users);
             renderUsers();
             this.reset();
         }
     }
 
-    // E-Commerce Management (replace localStorage)
+    // E-Commerce Management (localStorage)
     async function renderServices() {
         const ecomList = document.getElementById('ecom-list');
-        const services = await apiGet('/api/products');
+        const services = getLS('products', []);
         if (ecomList) {
             ecomList.innerHTML = services.map((s, i) =>
                 `<div>
@@ -341,40 +342,44 @@
             ).join('');
         }
     }
-    window.removeService = async function(name) {
-        await fetch(`/api/products/${encodeURIComponent(name)}`, { method: 'DELETE' });
+    window.removeService = function(name) {
+        let products = getLS('products', []);
+        products = products.filter(p => p.name !== name);
+        setLS('products', products);
         renderServices();
     }
     const addServiceForm = document.getElementById('add-service-form');
     if (addServiceForm) {
-        addServiceForm.onsubmit = async function(e) {
+        addServiceForm.onsubmit = function(e) {
             e.preventDefault();
-            await apiPost('/api/products', { name: this['service-title'].value, price: this['service-price'].value });
+            const products = getLS('products', []);
+            products.push({ name: this['service-title'].value, price: this['service-price'].value });
+            setLS('products', products);
             renderServices();
             this.reset();
         }
     }
 
-    // Settings (replace localStorage)
+    // Settings (localStorage)
     const settingsForm = document.getElementById('settings-form');
     if (settingsForm) {
-        settingsForm.onsubmit = async function(e) {
+        // Load settings
+        const settings = getLS('settings', { theme: 'default', siteTitle: 'Vishal Thakur' });
+        settingsForm['theme-select'].value = settings.theme || 'default';
+        settingsForm['site-title'].value = settings.siteTitle || 'Vishal Thakur';
+        settingsForm.onsubmit = function(e) {
             e.preventDefault();
-            await fetch('/api/settings', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    theme: this['theme-select'].value,
-                    siteTitle: this['site-title'].value
-                })
+            setLS('settings', {
+                theme: this['theme-select'].value,
+                siteTitle: this['site-title'].value
             });
             alert('Settings saved!');
         }
     }
 
-    // Messaging
+    // Messaging (localStorage)
     async function renderMessages() {
-        const messages = await apiGet('/api/messages');
+        const messages = getLS('messages', []);
         const list = document.getElementById('messages-list');
         list.innerHTML = messages.map(m =>
             `<div><b>${m.from}</b> to <b>${m.to}</b>: ${m.text} <span style="color:#888;font-size:0.9em;">${m.timestamp}</span></div>`
@@ -382,42 +387,40 @@
     }
     const sendMessageForm = document.getElementById('send-message-form');
     if (sendMessageForm) {
-        sendMessageForm.onsubmit = async function(e) {
+        sendMessageForm.onsubmit = function(e) {
             e.preventDefault();
-            await apiPost('/api/messages', {
+            const messages = getLS('messages', []);
+            messages.push({
                 from: 'admin',
                 to: this['msg-to'].value,
-                text: this['msg-text'].value
+                text: this['msg-text'].value,
+                timestamp: new Date().toISOString()
             });
+            setLS('messages', messages);
             renderMessages();
             this.reset();
         }
     }
 
-    // File uploads
+    // File uploads (simulate with localStorage, no real upload)
     const uploadFileForm = document.getElementById('upload-file-form');
     if (uploadFileForm) {
-        uploadFileForm.onsubmit = async function(e) {
+        uploadFileForm.onsubmit = function(e) {
             e.preventDefault();
-            const formData = new FormData();
-            formData.append('file', document.getElementById('file-input').files[0]);
-            const res = await fetch('/api/upload', { method: 'POST', body: formData });
-            const data = await res.json();
-            if (data.success) {
-                alert('File uploaded: ' + data.originalname);
+            const fileInput = document.getElementById('file-input');
+            if (fileInput.files.length > 0) {
+                const files = getLS('files', []);
+                files.push(fileInput.files[0].name);
+                setLS('files', files);
+                alert('File uploaded: ' + fileInput.files[0].name);
                 renderFiles();
-            } else {
-                alert('Upload failed');
             }
         }
     }
     async function renderFiles() {
-        const res = await fetch('/api/submissions');
-        const submissions = await res.json();
+        const files = getLS('files', []);
         const fileList = document.getElementById('file-list');
-        fileList.innerHTML = submissions
-            .flatMap(s => s.files || [])
-            .map(f => `<li>${f}</li>`).join('');
+        fileList.innerHTML = files.map(f => `<li>${f}</li>`).join('');
     }
 
     // Tab Switching (add new tabs)
@@ -434,17 +437,18 @@
         }
     });
 
-    // Admin Login (replace localStorage with backend)
+    // Admin Login (localStorage only)
     const adminLoginForm = document.getElementById('admin-login-form');
     const adminDashboard = document.getElementById('admin-dashboard');
     const logoutBtn = document.getElementById('logout-btn');
     if (adminLoginForm && adminDashboard) {
-        adminLoginForm.onsubmit = async function(e) {
+        adminLoginForm.onsubmit = function(e) {
             e.preventDefault();
             const u = this['admin-username'].value;
             const p = this['admin-password'].value;
-            const res = await apiPost('/api/login', { username: u, password: p });
-            if (res.success) {
+            const users = getLS('users', []);
+            const user = users.find(user => user.username === u && user.password === p);
+            if (user || (u === 'admin' && p === 'admin')) {
                 adminLoginForm.classList.add('fadeOut');
                 setTimeout(() => {
                     adminLoginForm.classList.add('hidden');
