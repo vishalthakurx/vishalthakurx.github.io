@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupHireMeButton();
     setupScrollToTopButton();
     setupLazyLoading();
+    setupAutoHideNavBar();
 
     const adminLoginForm = document.getElementById("admin-login-form");
     const adminDashboard = document.getElementById("admin-dashboard");
@@ -144,4 +145,18 @@ function setupLazyLoading() {
     });
 
     lazyImages.forEach(img => observer.observe(img));
+}
+
+function setupAutoHideNavBar() {
+    const header = document.querySelector('header');
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > lastScrollY) {
+            header.classList.add('hidden');
+        } else {
+            header.classList.remove('hidden');
+        }
+        lastScrollY = window.scrollY;
+    });
 }
