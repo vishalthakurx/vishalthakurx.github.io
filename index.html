@@ -6,6 +6,12 @@
     <title>Vishal Thakur</title>
     <meta name="description" content="Improved website with enhanced UI and information">
     <meta name="keywords" content="UI, Information, Vishal Thakur, Portfolio">
+    <meta name="author" content="Vishal Thakur">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Vishal Thakur - Software Developer">
+    <meta property="og:description" content="Portfolio showcasing Vishal Thakur's skills and services.">
+    <meta property="og:image" content="graphics/portfolio-thumbnail.jpg">
+    <meta property="og:url" content="https://vishalthakurx.github.io">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="store.js" defer></script>
@@ -125,6 +131,62 @@
         button:hover {
             background: #2ecc71;
         }
+
+        /* Social media links */
+        .social-media ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-media ul li a {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .social-media ul li a:hover {
+            color: #2ecc71;
+        }
+
+        /* Admin Panel */
+        .admin-panel.hidden {
+            display: none;
+        }
+
+        #admin-login-form, #edit-details-form {
+            margin-top: 20px;
+        }
+
+        #admin-login-form label, #edit-details-form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #admin-login-form input, #edit-details-form input, #edit-details-form textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #admin-login-form button, #edit-details-form button {
+            background: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #admin-login-form button:hover, #edit-details-form button:hover {
+            background: #2ecc71;
+        }
     </style>
 </head>
 <body>
@@ -143,6 +205,11 @@
                     <li><a href="#store">Services</a></li>
                 </ul>
             </nav>
+        </div>
+        <div class="hero">
+            <h1>Welcome to My Portfolio</h1>
+            <p>Transforming ideas into reality with cutting-edge technology.</p>
+            <button onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });">Hire Me</button>
         </div>
     </header>
     <main>
@@ -217,18 +284,26 @@
                 </div>
             </div>
         </section>
-        <section id="contact" class="contact fadeInBounce">
+        <section id="admin-panel" class="admin-panel hidden">
             <div class="container">
-                <h2>Contact Me</h2>
-                <form>
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" required>
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                    <label for="message">Message:</label>
-                    <textarea id="message" name="message" required></textarea>
-                    <button type="submit">Send</button>
+                <h2>Admin Panel</h2>
+                <form id="admin-login-form">
+                    <label for="admin-username">Username:</label>
+                    <input type="text" id="admin-username" name="admin-username" required>
+                    <label for="admin-password">Password:</label>
+                    <input type="password" id="admin-password" name="admin-password" required>
+                    <button type="submit">Login</button>
                 </form>
+                <div id="admin-dashboard" class="hidden">
+                    <h3>Edit Details</h3>
+                    <form id="edit-details-form">
+                        <label for="edit-name">Name:</label>
+                        <input type="text" id="edit-name" name="edit-name">
+                        <label for="edit-description">Description:</label>
+                        <textarea id="edit-description" name="edit-description"></textarea>
+                        <button type="submit">Save Changes</button>
+                    </form>
+                </div>
             </div>
         </section>
         <section id="store" class="store fadeInBounce">
@@ -249,6 +324,30 @@
                     <p>Starting at ₹50,000</p>
                     <button class="buy-now" data-service="Custom Software Development" data-upi="upi://pay?pa=example@upi&pn=Vishal%20Thakur&mc=0000&tid=123456789&tr=txn125&tn=Custom%20Software%20Development&am=50000&cu=INR">Buy Now</button>
                 </div>
+            </div>
+        </section>
+        <section id="contact" class="contact fadeInBounce">
+            <div class="container">
+                <h2>Contact Me</h2>
+                <form>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" required></textarea>
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+        </section>
+        <section id="social-media" class="social-media fadeInBounce">
+            <div class="container">
+                <h2>Connect with Me</h2>
+                <ul>
+                    <li><a href="https://twitter.com/vishalthakur" target="_blank">Twitter</a></li>
+                    <li><a href="https://github.com/vishalthakurx" target="_blank">GitHub</a></li>
+                    <li><a href="https://linkedin.com/in/vishalthakur" target="_blank">LinkedIn</a></li>
+                </ul>
             </div>
         </section>
     </main>

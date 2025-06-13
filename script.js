@@ -5,6 +5,34 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFormValidation();
     setupUPIPayment();
     setupScrollAnimations();
+    setupHireMeButton();
+
+    const adminLoginForm = document.getElementById("admin-login-form");
+    const adminDashboard = document.getElementById("admin-dashboard");
+
+    adminLoginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = document.getElementById("admin-username").value;
+        const password = document.getElementById("admin-password").value;
+
+        // Replace with actual authentication logic
+        if (username === "admin" && password === "password123") {
+            adminLoginForm.classList.add("hidden");
+            adminDashboard.classList.remove("hidden");
+        } else {
+            alert("Invalid credentials!");
+        }
+    });
+
+    const editDetailsForm = document.getElementById("edit-details-form");
+    editDetailsForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("edit-name").value;
+        const description = document.getElementById("edit-description").value;
+
+        // Replace with actual save logic
+        alert(`Details updated:\nName: ${name}\nDescription: ${description}`);
+    });
 });
 
 function applySavedTheme() {
@@ -67,5 +95,11 @@ function setupScrollAnimations() {
                 element.classList.add('visible');
             }
         });
+    });
+}
+
+function setupHireMeButton() {
+    document.querySelector('.hero button').addEventListener('click', () => {
+        document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
     });
 }
