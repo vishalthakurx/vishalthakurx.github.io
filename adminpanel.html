@@ -21,6 +21,7 @@
                     <li><a href="#dashboard"><i class="fa fa-chart-line"></i> Dashboard</a></li>
                     <li><a href="#users"><i class="fa fa-users"></i> Users</a></li>
                     <li><a href="#products"><i class="fa fa-box"></i> Products</a></li>
+                    <li><a href="#services"><i class="fa fa-concierge-bell"></i> Services</a></li>
                     <li><a href="#analytics"><i class="fa fa-chart-pie"></i> Analytics</a></li>
                     <li><a href="#settings"><i class="fa fa-cog"></i> Settings</a></li>
                 </ul>
@@ -88,6 +89,13 @@
                     </div>
                     <ul id="product-list" class="list-modern"></ul>
                 </section>
+                <section id="services">
+                    <div class="section-header">
+                        <h2>Service Management</h2>
+                        <button id="add-service-btn" class="btn-secondary"><i class="fa fa-plus"></i> Add Service</button>
+                    </div>
+                    <ul id="service-list" class="list-modern"></ul>
+                </section>
                 <section id="analytics">
                     <h2>Analytics</h2>
                     <div class="analytics-controls">
@@ -149,6 +157,7 @@
     <div id="admin-toast" style="display:none;position:fixed;bottom:30px;right:30px;padding:1rem 2rem;background:#27ae60;color:#fff;border-radius:8px;font-weight:bold;z-index:9999;"></div>
     <script src="scripts/admin-panel.js"></script>
     <script src="scripts/admin-modal.js"></script>
+    <script src="scripts/admin-services.js"></script>
     <script src="viewLogger.js"></script>
     <!-- Admin login logic -->
     <script>

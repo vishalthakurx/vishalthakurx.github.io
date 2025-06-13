@@ -232,6 +232,58 @@
             outline: 2px dashed #2ecc71;
             background: #eaffea;
         }
+
+        /* Modal styling */
+        .hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #2ecc71;
+        }
+
+        .btn-success {
+            background: #2ecc71;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-secondary {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #c0392b;
+        }
     </style>
 </head>
 <body>
@@ -486,6 +538,33 @@
                 </div>
             </div>
         </section>
+        <section id="services">
+            <h2>Available Services</h2>
+            <div id="services-list" class="services-list">
+                <!-- Services will be dynamically loaded here -->
+            </div>
+        </section>
+        <div id="service-modal" class="hidden" role="dialog" aria-modal="true" aria-labelledby="service-modal-title">
+            <div class="modal-content">
+                <h3 id="service-modal-title"></h3>
+                <div id="service-modal-details"></div>
+                <form id="service-requirement-form">
+                    <div class="form-group">
+                        <label for="requirement-details">Your Requirements</label>
+                        <textarea id="requirement-details" required></textarea>
+                    </div>
+                    <button type="button" id="estimate-pricing-btn" class="btn-primary">Get Pricing Estimate</button>
+                    <div id="pricing-estimate" style="margin:10px 0;"></div>
+                    <button type="submit" id="proceed-project-btn" class="btn-success hidden">Proceed to Project</button>
+                </form>
+                <div id="milestone-section" class="hidden">
+                    <h4>Milestone Payments</h4>
+                    <ul id="milestone-list"></ul>
+                    <button id="pay-advance-btn" class="btn-primary">Pay Advance</button>
+                </div>
+                <button id="close-service-modal" class="btn-secondary" style="margin-top:16px;">Close</button>
+            </div>
+        </div>
         <section id="contact" class="contact fadeInBounce" contenteditable="false">
             <div class="container">
                 <h2>Contact Me</h2>
@@ -674,5 +753,6 @@
             alert('Pretend to pay ' + amount + ' to ' + upiId);
         }
     </script>
+    <script src="scripts/services.js"></script>
 </body>
 </html>
