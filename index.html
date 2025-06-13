@@ -188,6 +188,50 @@
         #admin-login-form button:hover, #edit-details-form button:hover {
             background: #2ecc71;
         }
+
+        /* Fade-out animation for admin login */
+        .fadeOut {
+            animation: fadeOut 0.7s forwards;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        /* Admin panel tabs */
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .admin-tab {
+            background: #3498db;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .admin-tab.active {
+            background: #2ecc71;
+        }
+
+        .admin-section {
+            display: none;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        /* Editable highlight */
+        [contenteditable="true"]:focus {
+            outline: 2px dashed #2ecc71;
+            background: #eaffea;
+        }
     </style>
 </head>
 <body>
@@ -248,7 +292,7 @@
         </div>
     </header>
     <main>
-        <section id="about" class="about fadeInBounce">
+        <section id="about" class="about fadeInBounce" contenteditable="false">
             <div class="container">
                 <h2>About Me</h2>
                 <p>At Mittal Bazar, our team advanced web applications by integrating Generative AI, achieving secure, intelligent frameworks that heightened user interactions. Our project's success hinged on leveraging advanced data analytics, a skill fortified by my studies in physics and specialized certifications.</p>
@@ -256,7 +300,7 @@
                 <img src="assets/1748782323973.jpg" alt="Vishal Thakur" class="graphic" style="max-width: 200px; border-radius: 50%;">
             </div>
         </section>
-        <section id="resume" class="resume fadeInBounce">
+        <section id="resume" class="resume fadeInBounce" contenteditable="false">
             <div class="container">
                 <h2>Resume</h2>
                 <h3>Experience</h3>
@@ -281,14 +325,14 @@
                 </ul>
             </div>
         </section>
-        <section id="resume-download" class="resume-download fadeInBounce">
+        <section id="resume-download" class="resume-download fadeInBounce" contenteditable="false">
             <div class="container">
                 <h2>Download Resume</h2>
                 <p>Click the button below to download my resume.</p>
                 <button onclick="window.location.href='assets/resume.pdf'">Download Resume</button>
             </div>
         </section>
-        <section id="skills" class="skills fadeInBounce">
+        <section id="skills" class="skills fadeInBounce" contenteditable="false">
             <div class="container">
                 <h2>Skills</h2>
                 <div class="grid">
@@ -311,7 +355,7 @@
                 </div>
             </div>
         </section>
-        <section id="interests" class="interests fadeInBounce">
+        <section id="interests" class="interests fadeInBounce" contenteditable="false">
             <div class="container">
                 <h2>Interests</h2>
                 <ul>
@@ -322,7 +366,7 @@
                 </ul>
             </div>
         </section>
-        <section id="projects" class="projects fadeInBounce">
+        <section id="projects" class="projects fadeInBounce" contenteditable="false">
             <div class="container">
                 <h2>Projects</h2>
                 <div class="grid">
@@ -344,7 +388,7 @@
                 </div>
             </div>
         </section>
-        <section id="testimonials" class="testimonials fadeInBounce">
+        <section id="testimonials" class="testimonials fadeInBounce" contenteditable="false">
             <div class="container">
                 <h2>Testimonials</h2>
                 <div class="grid">
@@ -370,19 +414,55 @@
                     <button type="submit">Login</button>
                 </form>
                 <div id="admin-dashboard" class="hidden">
-                    <h3>Edit Details</h3>
-                    <form id="edit-details-form">
-                        <label for="edit-name">Name:</label>
-                        <input type="text" id="edit-name" name="edit-name">
-                        <label for="edit-description">Description:</label>
-                        <textarea id="edit-description" name="edit-description"></textarea>
-                        <button type="submit">Save Changes</button>
-                    </form>
+                    <div class="admin-tabs">
+                        <button class="admin-tab active" data-tab="content">Content Editor</button>
+                        <button class="admin-tab" data-tab="ecom">E-Commerce</button>
+                        <button class="admin-tab" data-tab="users">User Management</button>
+                        <button class="admin-tab" data-tab="settings">Settings</button>
+                    </div>
+                    <div id="admin-content" class="admin-section active">
+                        <p>Edit any section by clicking the "Enable Edit" button, then click "Save All" to persist changes.</p>
+                        <button id="enable-edit-btn">Enable Edit</button>
+                        <button id="save-content-btn">Save All</button>
+                        <button id="disable-edit-btn">Disable Edit</button>
+                    </div>
+                    <div id="admin-ecom" class="admin-section">
+                        <h3>Manage Services</h3>
+                        <div id="ecom-list"></div>
+                        <form id="add-service-form">
+                            <input type="text" id="service-title" placeholder="Service Title" required>
+                            <input type="text" id="service-price" placeholder="Price" required>
+                            <input type="text" id="service-upi" placeholder="UPI Link" required>
+                            <button type="submit">Add Service</button>
+                        </form>
+                    </div>
+                    <div id="admin-users" class="admin-section">
+                        <h3>User Management</h3>
+                        <div id="user-list"></div>
+                        <form id="add-user-form">
+                            <input type="text" id="new-username" placeholder="Username" required>
+                            <input type="password" id="new-password" placeholder="Password" required>
+                            <button type="submit">Add User</button>
+                        </form>
+                    </div>
+                    <div id="admin-settings" class="admin-section">
+                        <h3>Settings</h3>
+                        <form id="settings-form">
+                            <label for="site-title">Site Title:</label>
+                            <input type="text" id="site-title" value="Vishal Thakur">
+                            <label for="theme-select">Theme:</label>
+                            <select id="theme-select">
+                                <option value="default">Default</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                            <button type="submit">Save Settings</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>
-        <section id="store" class="store fadeInBounce">
-            <div class="container">
+        <section id="store" class="store fadeInBounce" contenteditable="false">
+            <div class="container" id="services-container">
                 <h2>Services</h2>
                 <div class="service">
                     <h3>Basic Website Development</h3>
@@ -406,7 +486,7 @@
                 </div>
             </div>
         </section>
-        <section id="contact" class="contact fadeInBounce">
+        <section id="contact" class="contact fadeInBounce" contenteditable="false">
             <div class="container">
                 <h2>Contact Me</h2>
                 <p>Feel free to reach out to me for collaboration or inquiries. You can connect with me on LinkedIn or send me a message using the form below.</p>
@@ -421,7 +501,7 @@
                 </form>
             </div>
         </section>
-        <section id="social-media" class="social-media fadeInBounce">
+        <section id="social-media" class="social-media fadeInBounce" contenteditable="false">
             <div class="container">
                 <h2>Connect with Me</h2>
                 <ul>
@@ -438,11 +518,160 @@
         </div>
     </footer>
     <script>
+        // --- Admin Panel Logic ---
+        const adminPanel = document.getElementById('admin-panel');
+        const adminLoginForm = document.getElementById('admin-login-form');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        const adminTabs = document.querySelectorAll('.admin-tab');
+        const adminSections = document.querySelectorAll('.admin-section');
+        const enableEditBtn = document.getElementById('enable-edit-btn');
+        const saveContentBtn = document.getElementById('save-content-btn');
+        const disableEditBtn = document.getElementById('disable-edit-btn');
+        const editableSections = [
+            'about', 'resume', 'resume-download', 'skills', 'interests', 'projects', 'testimonials', 'store', 'contact', 'social-media'
+        ];
+        // --- User Management ---
+        let users = JSON.parse(localStorage.getItem('users') || '[{"username":"admin","password":"admin"}]');
+        function renderUsers() {
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = users.map((u, i) =>
+                `<div>${u.username} <button onclick="removeUser(${i})">Remove</button></div>`
+            ).join('');
+        }
+        window.removeUser = function(idx) {
+            users.splice(idx, 1);
+            localStorage.setItem('users', JSON.stringify(users));
+            renderUsers();
+        }
+        document.getElementById('add-user-form').onsubmit = function(e) {
+            e.preventDefault();
+            users.push({username: newUsername.value, password: newPassword.value});
+            localStorage.setItem('users', JSON.stringify(users));
+            renderUsers();
+            this.reset();
+        }
+        // --- E-Commerce Management ---
+        let services = JSON.parse(localStorage.getItem('services') || '[]');
+        function renderServices() {
+            const ecomList = document.getElementById('ecom-list');
+            ecomList.innerHTML = services.map((s, i) =>
+                `<div>
+                    <b>${s.title}</b> - ₹${s.price}
+                    <button onclick="removeService(${i})">Remove</button>
+                </div>`
+            ).join('');
+            // Update store section
+            const storeDiv = document.getElementById('services-container');
+            if (services.length) {
+                storeDiv.innerHTML = `<h2>Services</h2>` + services.map(s =>
+                    `<div class="service">
+                        <h3>${s.title}</h3>
+                        <p>Starting at ₹${s.price}</p>
+                        <button class="buy-now" data-service="${s.title}" data-upi="${s.upi}">Buy Now</button>
+                    </div>`
+                ).join('');
+            }
+        }
+        window.removeService = function(idx) {
+            services.splice(idx, 1);
+            localStorage.setItem('services', JSON.stringify(services));
+            renderServices();
+        }
+        document.getElementById('add-service-form').onsubmit = function(e) {
+            e.preventDefault();
+            services.push({
+                title: serviceTitle.value,
+                price: servicePrice.value,
+                upi: serviceUpi.value
+            });
+            localStorage.setItem('services', JSON.stringify(services));
+            renderServices();
+            this.reset();
+        }
+        // --- Settings Management ---
+        document.getElementById('settings-form').onsubmit = function(e) {
+            e.preventDefault();
+            document.title = siteTitle.value;
+            localStorage.setItem('siteTitle', siteTitle.value);
+            // Theme logic (demo)
+            if (themeSelect.value === 'dark') {
+                document.body.style.background = '#222';
+                document.body.style.color = '#eee';
+            } else {
+                document.body.style.background = '';
+                document.body.style.color = '';
+            }
+        }
+        // --- Content Editor ---
+        enableEditBtn.onclick = function() {
+            editableSections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.setAttribute('contenteditable', 'true');
+            });
+        }
+        saveContentBtn.onclick = function() {
+            editableSections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) localStorage.setItem('content_' + id, el.innerHTML);
+            });
+            alert('Content saved!');
+        }
+        disableEditBtn.onclick = function() {
+            editableSections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.setAttribute('contenteditable', 'false');
+            });
+        }
+        // --- Tab Switching ---
+        adminTabs.forEach(tab => {
+            tab.onclick = function() {
+                adminTabs.forEach(t => t.classList.remove('active'));
+                adminSections.forEach(s => s.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('admin-' + tab.dataset.tab).classList.add('active');
+            }
+        });
+        // --- Admin Login ---
+        adminLoginForm.onsubmit = function(e) {
+            e.preventDefault();
+            const u = adminLoginForm['admin-username'].value;
+            const p = adminLoginForm['admin-password'].value;
+            if (users.find(user => user.username === u && user.password === p)) {
+                adminLoginForm.classList.add('fadeOut');
+                setTimeout(() => {
+                    adminLoginForm.classList.add('hidden');
+                    adminDashboard.classList.remove('hidden');
+                    renderUsers();
+                    renderServices();
+                }, 700);
+            } else {
+                alert('Invalid credentials');
+            }
+        }
+        // --- Load saved content/settings on page load ---
+        window.addEventListener('DOMContentLoaded', () => {
+            editableSections.forEach(id => {
+                const el = document.getElementById(id);
+                const saved = localStorage.getItem('content_' + id);
+                if (el && saved) el.innerHTML = saved;
+            });
+            const savedTitle = localStorage.getItem('siteTitle');
+            if (savedTitle) document.title = savedTitle;
+            renderUsers();
+            renderServices();
+        });
+        // --- E-commerce Buy Now handler (demo) ---
+        document.body.addEventListener('click', function(e) {
+            if (e.target.classList.contains('buy-now')) {
+                const upi = e.target.getAttribute('data-upi');
+                window.open(upi, '_blank');
+            }
+        });
+        // --- UPI Payment Demo ---
         async function initiateUPIPayment() {
             const upiId = document.getElementById('upiId').value;
-            const amount = 500; // Example amount
-            const paymentStatus = await handleBuy('product123', 'UPI', { upiId, amount });
-            alert(paymentStatus);
+            const amount = 500;
+            alert('Pretend to pay ' + amount + ' to ' + upiId);
         }
     </script>
 </body>
