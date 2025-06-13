@@ -1,0 +1,33 @@
+#search {
+    margin: 20px 0;
+}
+
+#search-bar {
+    width: 200px;
+    padding: 5px;
+}
+
+#search-button {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#user-management {
+    margin: 20px 0;
+}
+
+#user-management button {
+    margin-right: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#analytics {
+    margin: 20px 0;
+}
+
+#analytics-data {
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+}

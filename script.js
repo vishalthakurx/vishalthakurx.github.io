@@ -79,10 +79,31 @@ function setupFormValidation() {
 function setupUPIPayment() {
     const buyButtons = document.querySelectorAll('.buy-now');
     buyButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const upiLink = button.getAttribute('data-upi');
-            window.location.href = upiLink;
+        button.addEventListener('click', async () => {
+            const productId = button.getAttribute('data-product-id');
+            const paymentMethod = "UPI";
+            const paymentDetails = { upiLink: button.getAttribute('data-upi') };
+
+            try {
+                const result = await handleBuy(productId, paymentMethod, paymentDetails);
+                alert(result);
+            } catch (error) {
+                console.error("Payment failed:", error);
+            }
         });
+    });
+}
+
+async function handleBuy(productId, paymentMethod, paymentDetails) {
+    console.log(`Processing payment for product: ${productId}`);
+    console.log(`Payment method: ${paymentMethod}`);
+    console.log(`Payment details:`, paymentDetails);
+
+    // Simulate payment processing
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve("Payment successful!");
+        }, 2000);
     });
 }
 
@@ -159,4 +180,17 @@ function setupAutoHideNavBar() {
         }
         lastScrollY = window.scrollY;
     });
+}
+
+function updateAdminPanel() {
+    const adminPanel = document.getElementById("admin-panel");
+    const userList = document.getElementById("user-list");
+
+    // Example logic to dynamically update the admin panel
+    const newUser = document.createElement("li");
+    newUser.textContent = "New User";
+    userList.appendChild(newUser);
+
+    adminPanel.classList.remove("hidden");
+    console.log("Admin panel updated.");
 }
