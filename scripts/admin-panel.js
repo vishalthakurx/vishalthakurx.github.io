@@ -60,31 +60,106 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('admin-settings', JSON.stringify(settings));
     }
 
+    // Helper for roles
+    function getRoles() {
+        return JSON.parse(localStorage.getItem('admin-roles') || '{"Alice":"user","Bob":"user"}');
+    }
+    function setRoles(roles) {
+        localStorage.setItem('admin-roles', JSON.stringify(roles));
+    }
+
+    // Helper for passwords (for demo, not secure)
+    function getPasswords() {
+        return JSON.parse(localStorage.getItem('admin-passwords') || '{"Alice":"alice123","Bob":"bob123"}');
+    }
+    function setPasswords(passwords) {
+        localStorage.setItem('admin-passwords', JSON.stringify(passwords));
+    }
+
     // Render functions
     function renderUsers() {
         userList.innerHTML = '';
-        getUsers().forEach((user, idx) => {
+        const users = getUsers();
+        const roles = getRoles();
+        users.forEach((user, idx) => {
             const li = document.createElement('li');
-            li.textContent = user;
+            li.textContent = user + ' (' + (roles[user] || 'user') + ')';
+            // Edit button
+            const edit = document.createElement('button');
+            edit.textContent = 'Edit';
+            edit.className = 'btn-secondary';
+            edit.onclick = () => {
+                window.showAdminModal('Edit User', [
+                    { label: 'Username', id: 'modal-username', type: 'text', required: true, value: user, pattern: '^[a-zA-Z0-9_]{4,16}$' },
+                    { label: 'Role', id: 'modal-role', type: 'text', required: true, value: roles[user] || 'user' }
+                ], function(formData) {
+                    const usersArr = getUsers();
+                    usersArr[idx] = formData['modal-username'];
+                    setUsers(usersArr);
+                    const rolesObj = getRoles();
+                    delete rolesObj[user];
+                    rolesObj[formData['modal-username']] = formData['modal-role'];
+                    setRoles(rolesObj);
+                    renderUsers();
+                    updateDashboard();
+                });
+            };
+            // Reset password button
+            const resetPwd = document.createElement('button');
+            resetPwd.textContent = 'Reset Password';
+            resetPwd.className = 'btn-secondary';
+            resetPwd.onclick = () => {
+                window.showAdminModal('Reset Password', [
+                    { label: 'New Password', id: 'modal-password', type: 'password', required: true }
+                ], function(formData) {
+                    const passwords = getPasswords();
+                    passwords[user] = formData['modal-password'];
+                    setPasswords(passwords);
+                    alert('Password reset for ' + user);
+                });
+            };
+            // Delete button
             const del = document.createElement('button');
             del.textContent = 'Delete';
             del.className = 'btn-danger';
             del.onclick = () => {
-                const users = getUsers();
-                users.splice(idx, 1);
-                setUsers(users);
+                const usersArr = getUsers();
+                usersArr.splice(idx, 1);
+                setUsers(usersArr);
+                const rolesObj = getRoles();
+                delete rolesObj[user];
+                setRoles(rolesObj);
                 renderUsers();
                 updateDashboard();
             };
+            li.appendChild(edit);
+            li.appendChild(resetPwd);
             li.appendChild(del);
             userList.appendChild(li);
         });
     }
+
     function renderProducts() {
         productList.innerHTML = '';
         getProducts().forEach((prod, idx) => {
             const li = document.createElement('li');
             li.textContent = prod;
+            // Edit button
+            const edit = document.createElement('button');
+            edit.textContent = 'Edit';
+            edit.className = 'btn-secondary';
+            edit.onclick = () => {
+                window.showAdminModal('Edit Product', [
+                    { label: 'Product Name', id: 'modal-product-name', type: 'text', required: true, value: prod }
+                ], function(formData) {
+                    const products = getProducts();
+                    products[idx] = formData['modal-product-name'];
+                    setProducts(products);
+                    renderProducts();
+                    updateDashboard();
+                });
+            };
+            // Delete button
             const del = document.createElement('button');
             del.textContent = 'Delete';
             del.className = 'btn-danger';
@@ -95,10 +170,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderProducts();
                 updateDashboard();
             };
+            li.appendChild(edit);
             li.appendChild(del);
             productList.appendChild(li);
         });
     }
+
     function updateDashboard() {
         totalUsers.textContent = getUsers().length;
         totalProducts.textContent = getProducts().length;
@@ -263,9 +340,20 @@ document.addEventListener('DOMContentLoaded', () => {
         addUserBtn.addEventListener('click', function() {
             window.showAdminModal('Add User', [
                 { label: 'Username', id: 'modal-username', type: 'text', required: true, pattern: '^[a-zA-Z0-9_]{4,16}$' },
-                { label: 'Email', id: 'modal-email', type: 'email', required: true }
+                { label: 'Role', id: 'modal-role', type: 'text', required: true, value: 'user' },
+                { label: 'Password', id: 'modal-password', type: 'password', required: true }
             ], function(formData) {
-                alert('User added: ' + JSON.stringify(formData));
+                const users = getUsers();
+                users.push(formData['modal-username']);
+                setUsers(users);
+                const roles = getRoles();
+                roles[formData['modal-username']] = formData['modal-role'];
+                setRoles(roles);
+                const passwords = getPasswords();
+                passwords[formData['modal-username']] = formData['modal-password'];
+                setPasswords(passwords);
+                renderUsers();
+                updateDashboard();
             });
         });
     }
@@ -274,10 +362,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (addProductBtn) {
         addProductBtn.addEventListener('click', function() {
             window.showAdminModal('Add Product', [
-                { label: 'Product Name', id: 'modal-product-name', type: 'text', required: true },
-                { label: 'Price', id: 'modal-product-price', type: 'number', required: true, min: 0 }
+                { label: 'Product Name', id: 'modal-product-name', type: 'text', required: true }
             ], function(formData) {
-                alert('Product added: ' + JSON.stringify(formData));
+                const products = getProducts();
+                products.push(formData['modal-product-name']);
+                setProducts(products);
+                renderProducts();
+                updateDashboard();
             });
         });
     }
@@ -294,6 +385,73 @@ document.addEventListener('DOMContentLoaded', () => {
                 resetAnalytics();
             }
         });
+    }
+
+    // Export/Import Data
+    function exportData() {
+        const data = {
+            users: getUsers(),
+            roles: getRoles(),
+            passwords: getPasswords(),
+            products: getProducts(),
+            analytics: getAnalytics(),
+            settings: getSettings()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'admin-data-export.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+    function importData(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (data.users) setUsers(data.users);
+                if (data.roles) setRoles(data.roles);
+                if (data.passwords) setPasswords(data.passwords);
+                if (data.products) setProducts(data.products);
+                if (data.analytics) setAnalytics(data.analytics);
+                if (data.settings) setSettings(data.settings);
+                renderUsers();
+                renderProducts();
+                updateDashboard();
+                renderAnalytics();
+                loadSettings();
+                alert('Import successful!');
+            } catch (err) {
+                alert('Import failed: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // Add export/import buttons to settings section
+    if (settingsForm) {
+        const exportBtn = document.createElement('button');
+        exportBtn.type = 'button';
+        exportBtn.className = 'btn-secondary';
+        exportBtn.textContent = 'Export Data';
+        exportBtn.onclick = exportData;
+        settingsForm.appendChild(exportBtn);
+
+        const importInput = document.createElement('input');
+        importInput.type = 'file';
+        importInput.accept = '.json';
+        importInput.style.display = 'none';
+        importInput.onchange = function(e) {
+            if (e.target.files[0]) importData(e.target.files[0]);
+        };
+        const importBtn = document.createElement('button');
+        importBtn.type = 'button';
+        importBtn.className = 'btn-secondary';
+        importBtn.textContent = 'Import Data';
+        importBtn.onclick = () => importInput.click();
+        settingsForm.appendChild(importBtn);
+        settingsForm.appendChild(importInput);
     }
 
     // On load, apply theme if already set

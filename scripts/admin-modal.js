@@ -22,6 +22,7 @@
             input.required = !!f.required;
             if (f.pattern) input.pattern = f.pattern;
             if (f.min !== undefined) input.min = f.min;
+            if (f.value !== undefined) input.value = f.value;
             div.appendChild(label);
             div.appendChild(input);
             form.appendChild(div);
