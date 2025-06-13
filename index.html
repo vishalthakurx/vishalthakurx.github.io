@@ -25,24 +25,15 @@
             color: #2c3e50;
         }
 
-        /* Header improvements */
+        /* Modern navigation bar */
         #header {
             position: sticky;
             top: 0;
             z-index: 1000;
-            background: linear-gradient(to right, #3498db, #2ecc71);
+            background: #2c3e50;
             color: #fff;
-            padding: 20px 0;
+            padding: 10px 0;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        #header h1 {
-            font-size: 2.5rem;
-            margin: 0;
-        }
-
-        #header h2 span {
-            color: #f1c40f;
         }
 
         .nav-menu ul {
@@ -54,18 +45,22 @@
         }
 
         .nav-menu ul li {
-            margin: 0 15px;
+            margin: 0 20px;
         }
 
         .nav-menu ul li a {
             text-decoration: none;
             color: #fff;
             font-weight: bold;
-            transition: color 0.3s ease;
+            font-size: 1rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .nav-menu ul li a:hover {
-            color: #f1c40f;
+            background: #3498db;
+            color: #fff;
         }
 
         /* Section improvements */
@@ -137,10 +132,9 @@
         <div class="container">
             <h1>Vishal Thakur</h1>
             <h2>I'm a <span>Software Developer</span> from India</h2>
-            <button id="theme-toggle">Toggle Theme</button>
             <nav class="nav-menu">
                 <ul>
-                    <li class="active"><a href="#header">Home</a></li>
+                    <li><a href="#header">Home</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#resume">Resume</a></li>
                     <li><a href="#skills">Skills</a></li>
@@ -155,7 +149,7 @@
         <section id="about" class="about fadeInBounce">
             <div class="container">
                 <h2>About Me</h2>
-                <p>Welcome to my portfolio! I am Vishal Thakur, a passionate developer with expertise in web technologies.</p>
+                <p>Welcome to my portfolio! I am Vishal Thakur, a passionate developer with expertise in web technologies. I specialize in creating efficient, scalable, and user-friendly applications that solve real-world problems.</p>
                 <img src="graphics/about.svg" alt="About Me Graphic" class="graphic">
             </div>
         </section>
@@ -164,6 +158,7 @@
                 <h2>Resume</h2>
                 <p><strong>Education:</strong> B.Tech (IT), VIT Vellore</p>
                 <p><strong>Experience:</strong> Associate Software Engineer at Danske IT</p>
+                <p><strong>Achievements:</strong> Developed a high-performance application that reduced processing time by 30%. Recognized as a top performer in the team.</p>
             </div>
         </section>
         <section id="skills" class="skills fadeInBounce">
@@ -172,15 +167,19 @@
                 <div class="grid">
                     <div class="card">
                         <h3>Java</h3>
-                        <p>Expert in building scalable backend systems.</p>
+                        <p>Expert in building scalable backend systems and implementing design patterns.</p>
                     </div>
                     <div class="card">
                         <h3>JavaScript</h3>
-                        <p>Proficient in creating dynamic web applications.</p>
+                        <p>Proficient in creating dynamic web applications using modern frameworks like React and Angular.</p>
                     </div>
                     <div class="card">
                         <h3>Python</h3>
-                        <p>Experienced in data analysis and automation.</p>
+                        <p>Experienced in data analysis, machine learning, and automation using libraries like Pandas and TensorFlow.</p>
+                    </div>
+                    <div class="card">
+                        <h3>SQL</h3>
+                        <p>Skilled in database design, optimization, and writing complex queries.</p>
                     </div>
                 </div>
             </div>
@@ -201,14 +200,19 @@
                 <h2>Projects</h2>
                 <div class="grid">
                     <div class="card">
-                        <h3>Project 1</h3>
-                        <p>A brief description of Project 1.</p>
+                        <h3>Project 1: E-Commerce Platform</h3>
+                        <p>Developed a scalable e-commerce platform with integrated payment gateways and real-time analytics.</p>
                         <img src="graphics/project1.svg" alt="Project 1 Graphic" class="graphic">
                     </div>
                     <div class="card">
-                        <h3>Project 2</h3>
-                        <p>A brief description of Project 2.</p>
+                        <h3>Project 2: Portfolio Website</h3>
+                        <p>Designed and implemented a responsive portfolio website showcasing skills and projects.</p>
                         <img src="graphics/project2.svg" alt="Project 2 Graphic" class="graphic">
+                    </div>
+                    <div class="card">
+                        <h3>Project 3: Task Management App</h3>
+                        <p>Created a task management app with features like reminders, priority settings, and collaboration tools.</p>
+                        <img src="graphics/project3.svg" alt="Project 3 Graphic" class="graphic">
                     </div>
                 </div>
             </div>

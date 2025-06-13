@@ -1,22 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Apply saved theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark-mode') {
-        document.body.classList.add('dark-mode');
-    }
+    applySavedTheme();
+    setupThemeToggle();
+    setupSmoothScrolling();
+    setupFormValidation();
+    setupUPIPayment();
+    setupScrollAnimations();
+});
 
+function applySavedTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.classList.add(savedTheme);
+}
+
+function setupThemeToggle() {
     const themeToggleButton = document.getElementById('theme-toggle');
-    const currentTheme = getThemePreference();
-    document.body.classList.add(currentTheme);
-
     themeToggleButton.addEventListener('click', () => {
         const newTheme = document.body.classList.contains('light') ? 'dark' : 'light';
         document.body.classList.remove('light', 'dark');
         document.body.classList.add(newTheme);
-        saveThemePreference(newTheme);
+        localStorage.setItem('theme', newTheme);
     });
+}
 
-    // Smooth scrolling for navigation links
+function setupSmoothScrolling() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -25,8 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
+}
 
-    // Form validation
+function setupFormValidation() {
     const form = document.querySelector('form');
     form.addEventListener('submit', (e) => {
         const name = document.getElementById('name').value.trim();
@@ -38,16 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please fill out all fields.');
         }
     });
+}
 
-    // Theme toggle functionality
-    const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        const currentTheme = document.body.classList.contains('dark-mode') ? 'dark-mode' : 'light-mode';
-        localStorage.setItem('theme', currentTheme);
-    });
-
-    // Handle UPI payment actions
+function setupUPIPayment() {
     const buyButtons = document.querySelectorAll('.buy-now');
     buyButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -55,15 +55,17 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = upiLink;
         });
     });
-});
+}
 
-document.addEventListener('scroll', () => {
-    const elements = document.querySelectorAll('.fadeInBounce');
-    elements.forEach(element => {
-        const position = element.getBoundingClientRect().top;
-        const windowHeight = window.innerHeight;
-        if (position < windowHeight - 100) {
-            element.classList.add('visible');
-        }
+function setupScrollAnimations() {
+    document.addEventListener('scroll', () => {
+        const elements = document.querySelectorAll('.fadeInBounce');
+        elements.forEach(element => {
+            const position = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+            if (position < windowHeight - 100) {
+                element.classList.add('visible');
+            }
+        });
     });
-});
+}

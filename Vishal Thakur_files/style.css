@@ -238,50 +238,38 @@ h1, h2, h3, h4, h5, h6 {
 --------------------------------------------------------------*/
 /* Desktop Navigation */
 .nav-menu {
-  margin-top: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #2c3e50;
+  padding: 10px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .nav-menu ul {
   display: flex;
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
 }
 
-.nav-menu li + li {
-  margin-left: 30px;
+.nav-menu li {
+  margin: 0 15px;
 }
 
 .nav-menu a {
-  display: block;
-  position: relative;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 16px;
-  font-family: "Poppins", sans-serif;
-  font-weight: 400;
-}
-
-.nav-menu a:before {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -4px;
-  left: 0;
-  background-color: rgb(220,20,60);
-  visibility: hidden;
-  width: 0px;
-  transition: all 0.3s ease-in-out 0s;
-}
-
-.nav-menu a:hover:before, .nav-menu li:hover > a:before, .nav-menu .active > a:before {
-  visibility: visible;
-  width: 25px;
-}
-
-.nav-menu a:hover, .nav-menu .active > a, .nav-menu li:hover > a {
-  color: #fff;
   text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.nav-menu a:hover {
+  background: #3498db;
+  color: #fff;
 }
 
 /* Mobile Navigation */
