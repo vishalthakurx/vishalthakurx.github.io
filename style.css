@@ -41,12 +41,16 @@ header .nav-menu ul li a {
     font-weight: bold;
 }
 
+header .nav-menu ul li a.active {
+    border-bottom: 2px solid white;
+}
+
 main {
     padding: 2rem;
 }
 
 section {
-    margin-bottom: 2rem;
+    margin-bottom: 3rem; /* Increased spacing */
 }
 
 section h2 {

@@ -32,3 +32,10 @@ Visit [vishalthakur.me](https://vishalthakur.me) to view the website.
    git push origin main
    ```
 5. Ensure GitHub Pages is enabled in the repository settings.
+
+## Contributing
+Contributions are welcome! Please follow these steps:
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Commit your changes and push them to your fork.
+4. Submit a pull request with a detailed description of your changes.
