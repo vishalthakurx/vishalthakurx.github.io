@@ -292,26 +292,9 @@
         }
 
         /* Editable highlight */
-            <nav class="nav-menu">
-                <button class="nav-toggle" aria-label="Toggle navigation">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                </button>
-                <ul>
-                    <li><a href="#header">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#resume">Resume</a></li>
-                    <li><a href="#skills">Skills</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <li><a href="#store">Services</a></li>
-                    <li><a href="#testimonials">Testimonials</a></li>
-                    <li><a href="adminpanel.html">Admin Panel</a></li>
-                </ul>
-            </nav>
-            cursor: pointer;
-            transition: background 0.3s ease;
+        .editable-highlight {
+            outline: 2px dashed #3498db;
+            background: #eaf6fb;
         }
 
         .btn-secondary:hover {
@@ -591,29 +574,8 @@
                     <button id="pay-advance-btn" class="btn-primary">Pay Advance</button>
                 </div>
                 <button id="close-service-modal" class="btn-secondary" style="margin-top:16px;">Close</button>
-    <script>
-        // --- Responsive Navbar Logic ---
-        document.addEventListener('DOMContentLoaded', function () {
-            const navToggle = document.querySelector('.nav-toggle');
-            const navMenu = document.querySelector('.nav-menu ul');
-            navToggle.addEventListener('click', function () {
-                navMenu.classList.toggle('open');
-            });
-            // Optional: Close menu when clicking a link (mobile UX)
-            navMenu.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth <= 900) {
-                        navMenu.classList.remove('open');
-                    }
-                });
-            });
-        });
-
-        // --- Admin Panel Logic ---
-        const adminPanel = document.getElementById('admin-panel');
-        // (rest of your JS code...)
-
-        </section>
+            </div>
+        </div>
         <section id="contact" class="contact fadeInBounce" contenteditable="false">
             <div class="container">
                 <h2>Contact Me</h2>
