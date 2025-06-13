@@ -684,7 +684,7 @@
     }
 
     // User Management
-    let users = JSON.parse(localStorage.getItem('users') || '[{"username":"admin","password":"admin"}]');
+    let users = JSON.parse(localStorage.getItem('users') || '[{"username":"cobra","password":"1234"}]');
     function renderUsers() {
         const userList = document.getElementById('user-list');
         if (userList) {
@@ -729,24 +729,39 @@
     // Admin Login
     const adminLoginForm = document.getElementById('admin-login-form');
     const adminDashboard = document.getElementById('admin-dashboard');
+    function doAdminLogin() {
+        if (adminLoginForm && adminDashboard) {
+            adminLoginForm.classList.add('fadeOut');
+            setTimeout(() => {
+                adminLoginForm.classList.add('hidden');
+                adminDashboard.classList.remove('hidden');
+                renderUsers();
+                renderServices();
+            }, 700);
+        }
+    }
     if (adminLoginForm && adminDashboard) {
         adminLoginForm.onsubmit = function(e) {
             e.preventDefault();
             const u = this['admin-username'].value;
             const p = this['admin-password'].value;
             if (users.find(user => user.username === u && user.password === p)) {
-                adminLoginForm.classList.add('fadeOut');
-                setTimeout(() => {
-                    adminLoginForm.classList.add('hidden');
-                    adminDashboard.classList.remove('hidden');
-                    renderUsers();
-                    renderServices();
-                }, 700);
+                localStorage.setItem('adminLoggedIn', 'true');
+                doAdminLogin();
             } else {
                 alert('Invalid credentials');
             }
         }
     }
+    // Remember login
+    function checkAdminLogin() {
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            doAdminLogin();
+        }
+    }
+
+    // Logout on page unload (optional, remove if you want persistent login across browser restarts)
+    // window.addEventListener('beforeunload', () => localStorage.removeItem('adminLoggedIn'));
 
     // Tab Switching
     const adminTabs = document.querySelectorAll('.admin-tab');
@@ -776,6 +791,7 @@
         renderUsers();
         renderServices();
         showAdminPanelIfHash();
+        checkAdminLogin();
     });
 
     // E-commerce Buy Now handler
