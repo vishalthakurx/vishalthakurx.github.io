@@ -1,5 +1,5 @@
 {
-   "name": "Avision Studios",
+   "name": "avision-studios",
    "version": "1.0.0",
    "description": "Professional website using Tailwind CSS",
    "main": "index.js",
@@ -18,5 +18,8 @@
    "devDependencies": {
       "tailwindcss": "^3.4.0",
       "vite": "^5.0.0"
+   },
+   "dependencies": {
+      "autoprefixer": "^10.4.21"
    }
 }
