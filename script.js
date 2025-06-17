@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupHireMeButton();
     setupScrollToTopButton();
     setupLazyLoading();
+    setupImageFadeIn();
+    setupBlogDocsLoader();
     setupAutoHideNavBar();
     setupTestimonials();
 });
@@ -158,6 +160,23 @@ function setupLazyLoading() {
     });
 
     lazyImages.forEach(img => observer.observe(img));
+}
+
+function setupImageFadeIn() {
+    document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+        img.addEventListener('load', () => {
+            img.classList.add('loaded');
+        });
+        if (img.complete) {
+            img.classList.add('loaded');
+        }
+    });
+}
+
+function setupBlogDocsLoader() {
+    // Example: fetch and render blog posts or docs if available
+    // document.getElementById('blog').querySelector('.container').innerHTML += ...
+    // document.getElementById('docs').querySelector('.container').innerHTML += ...
 }
 
 function setupAutoHideNavBar() {

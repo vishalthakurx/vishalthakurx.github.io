@@ -1,5 +1,14 @@
+---
+title: Vishal Thakur Resume
+author: Vishal Thakur
+language: en
+canonical: https://vishalthakurx.github.io/resume.md
+description: Resume of Vishal Thakur - Portfolio, Blog, Project Documentation, Services, Client Management.
+---
 
 # Vishal Thakur
+
+> Portfolio, blog, project documentation, sale of services, showcase work, and client management.
 
 ## Contact
 **Address:** 36, Sai Colony, Gossaitola, Ranchi, 834001  
@@ -63,4 +72,4 @@ Worked as the Senior Software Developer for Shri Nath IT Solutions.
 
 ### Goethal's Public School  
 **Level:** Matriculation (10th)  
-**Completion:** March 2019  
+**Completion:** March 2019
