@@ -1,0 +1,22 @@
+{
+   "name": "Avision Studios",
+   "version": "1.0.0",
+   "description": "Professional website using Tailwind CSS",
+   "main": "index.js",
+   "scripts": {
+      "start": "vite",
+      "build": "vite build",
+      "dev": "vite"
+   },
+   "keywords": [
+      "tailwind",
+      "vite",
+      "website"
+   ],
+   "author": "",
+   "license": "MIT",
+   "devDependencies": {
+      "tailwindcss": "^3.4.0",
+      "vite": "^5.0.0"
+   }
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Avision Studios</title>
+  <link href="styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <!-- Navbar -->
+  <div id="navbar"></div>
+  <script>
+    fetch('navbar.html')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('navbar').innerHTML = data;
+      });
+  </script>
+  <main class="container mx-auto px-4 py-16 text-center">
+    <h1 class="text-5xl font-bold mb-4">Welcome to Avision Studios</h1>
+    <p class="text-xl mb-8">Innovative Software Solutions for Your Business</p>
+    <a href="services.html" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition">Our Services</a>
+  </main>
+</body>
+</html>
