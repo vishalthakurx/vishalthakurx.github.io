@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blog Manager - Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="/includes/include-loader.js"></script>
+  <script src="/common.js" defer></script>
+  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+  <script src="/scripts/blog-manager.js" defer></script>
+  <style>
+    .drop-area { border:2px dashed #ccc; padding:18px; min-height:200px; }
+    .block { border:1px solid #ddd; padding:10px; margin:8px 0; background:#fff }
+    .ad-block { background:#f7f7f7; border:1px dashed #999; padding:12px; text-align:center; color:#666 }
+  </style>
+</head>
+<body>
+  <div data-include="/includes/header.html"></div>
+  <main class="container">
+    <h2>Blog Manager</h2>
+    <div>
+  <input id="post-title" placeholder="Post title" style="width:100%;padding:8px;margin-bottom:8px;" />
+  <input id="post-slug" placeholder="slug (optional) e.g. my-first-post" style="width:100%;padding:8px;margin-bottom:8px;" />
+      <div style="margin:8px 0;padding:8px;border:1px solid #eee;background:#fafafa">
+        <strong>Publish / Sync</strong>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+          <input id="gh-owner" placeholder="GitHub owner" style="width:160px;padding:6px">
+          <input id="gh-repo" placeholder="Repository name" style="width:200px;padding:6px">
+          <input id="gh-branch" placeholder="branch (e.g. main)" style="width:120px;padding:6px" value="main">
+          <input id="gh-token" placeholder="Personal access token (repo scope)" style="width:260px;padding:6px">
+          <button id="save-gh-config">Save Config</button>
+          <button id="publish-github">Publish to GitHub</button>
+          <button id="export-post">Export HTML</button>
+        </div>
+        <div style="font-size:12px;color:#666;margin-top:6px">Note: Storing a token in the browser is insecure — prefer using a server-side action. This tool will try to push an HTML file under <code>posts/</code> in the repo.</div>
+      </div>
+      <div class="drop-area" id="drop-area" contenteditable="false">
+        <p>Drag blocks here or click to add</p>
+      </div>
+      <div style="margin-top:8px;">
+        <button id="add-paragraph">Add Paragraph</button>
+        <button id="add-image">Add Image</button>
+        <button id="add-ad">Add Ad Block</button>
+        <button id="save-post">Save Post</button>
+        <button id="publish-current" style="margin-left:8px">Publish Current</button>
+      </div>
+      <h3>Saved Posts</h3>
+      <div id="saved-posts"></div>
+    </div>
+  </main>
+  <div data-include="/includes/footer.html"></div>
+</body>
+</html>

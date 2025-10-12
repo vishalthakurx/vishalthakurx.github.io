@@ -22,6 +22,7 @@ function applySavedTheme() {
 
 function setupThemeToggle() {
     const themeToggleButton = document.getElementById('theme-toggle');
+    if (!themeToggleButton) return; // no theme toggle on this page
     themeToggleButton.addEventListener('click', () => {
         const newTheme = document.body.classList.contains('light') ? 'dark' : 'light';
         document.body.classList.remove('light', 'dark');
@@ -34,19 +35,22 @@ function setupSmoothScrolling() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
         });
     });
 }
 
 function setupFormValidation() {
     const form = document.querySelector('form');
+    if (!form) return;
     form.addEventListener('submit', (e) => {
-        const name = document.getElementById('name').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const message = document.getElementById('message').value.trim();
+        const nameEl = document.getElementById('name');
+        const emailEl = document.getElementById('email');
+        const messageEl = document.getElementById('message');
+        const name = nameEl ? nameEl.value.trim() : '';
+        const email = emailEl ? emailEl.value.trim() : '';
+        const message = messageEl ? messageEl.value.trim() : '';
 
         if (!name || !email || !message) {
             e.preventDefault();
@@ -115,8 +119,11 @@ function setupHoverAnimations() {
 }
 
 function setupHireMeButton() {
-    document.querySelector('.hero button').addEventListener('click', () => {
-        document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+    const hireBtn = document.querySelector('.hero button');
+    if (!hireBtn) return;
+    hireBtn.addEventListener('click', () => {
+        const contact = document.getElementById('contact');
+        if (contact) contact.scrollIntoView({ behavior: 'smooth' });
     });
 }
 
@@ -212,6 +219,7 @@ function setupTestimonials() {
     ];
 
     const testimonialsContainer = document.querySelector('#testimonials .grid');
+    if (!testimonialsContainer) return;
     testimonials.forEach(testimonial => {
         const card = document.createElement('div');
         card.className = 'card';
